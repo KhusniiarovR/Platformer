@@ -18,25 +18,31 @@ void unload_fonts() {
 void load_images() {
     wall_image    = LoadTexture("data/images/wall.png");
     air_image     = LoadTexture("data/images/air.png");
-    exit_image    = LoadTexture("data/images/exit.png");
     spike_image   = LoadTexture("data/images/spike.png");
-    spring_image  = LoadTexture("data/images/spring.png");
+    spring_image  = LoadTexture("data/images/spring_idle.png");
     heart_image   = LoadTexture("data/images/heart.png");
-    player_stop_image = LoadTexture("data/images/playerstop.png");
+    main_menu_image = LoadTexture("data/images/main_menu.png");
+    game_over_image = LoadTexture("data/images/game_over.png");
     coin_sprite   = load_sprite("data/images/coin/coin",     ".png", 3, true, 18);
-    player_sprite = load_sprite("data/images/player/player", ".png", 3, true, 10);
+    player_sprite = load_sprite("data/images/player/player_move/player", ".png", 3, true, 10);
+    player_idle_sprite = load_sprite("data/images/player/player_idle/player_idle", ".png", 2, true, 20);
+    spring_sprite = load_sprite("data/images/spring/spring", ".png", 4, false, 1);
+    exit_sprite = load_sprite("data/images/exit/exit", ".png", 3, true, 30);
 }
 
 void unload_images() {
     UnloadTexture(wall_image);
     UnloadTexture(air_image);
-    UnloadTexture(exit_image);
-    UnloadTexture(player_stop_image);
     UnloadTexture(spike_image);
     UnloadTexture(spring_image);
     UnloadTexture(heart_image);
+    UnloadTexture(main_menu_image);
+    UnloadTexture(game_over_image);
     unload_sprite(player_sprite);
+    unload_sprite(player_idle_sprite);
     unload_sprite(coin_sprite);
+    unload_sprite(spring_sprite);
+    unload_sprite(exit_sprite);
 }
 
 void draw_image(Texture2D image, Vector2 pos, float size) {
@@ -49,17 +55,20 @@ void draw_image(Texture2D image, Vector2 pos, float width, float height) {
     DrawTexturePro(image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
 }
 
-void draw_image_mirror(Texture2D image, Vector2 pos, float width, float height) {
-    Rectangle source = { 0.0f, 0.0f, static_cast<float>(-image.width), static_cast<float>(image.height) };
+void draw_image_player(Texture2D image, Vector2 pos, float width, float height) {
+    Rectangle source = { 0.0f, 0.0f, static_cast<float>(image.width), static_cast<float>(image.height)};
+    if (!player_facing_right) {
+        source.width = static_cast<float>(-image.width);
+    }
     Rectangle destination = { pos.x, pos.y, abs(width), height };
     DrawTexturePro(image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
 }
 
 void draw_game_overlay_hearts() {
     Rectangle source_rec = {0, 0, (float) heart_image.width, (float) heart_image.height};
-    Rectangle destination_rec = {static_cast<float>(screen_size.x * 0.7), 0, 48, 48};
+    Rectangle destination_rec = {static_cast<float>(screen_size.x * 0.65), 0, 50 * screen_scale, 60 * screen_scale};
     for (int i = 0; i < player_lifes; i++) {
-        destination_rec.x += 36;
+        destination_rec.x += 35 * screen_scale;
         DrawTexturePro(heart_image, source_rec, destination_rec, {0,0}, 0.0f, WHITE);
     }
 }
@@ -107,35 +116,32 @@ void draw_sprite(sprite &sprite, Vector2 pos, float size) {
     draw_sprite(sprite, pos, size, size);
 }
 
-void draw_player_anim(sprite &sprite, Vector2 pos, float width, float height) {
-    if (&sprite == &player_sprite) {
-        if (!is_player_moving && is_player_on_ground) {
-            if (!player_facing_right) {
-                draw_image_mirror(player_stop_image, pos, width, height);
-                return;
-            }
-            draw_image(player_stop_image, pos, width, height);
-            return;
-        }
-        if (!player_facing_right) {
-            draw_image_mirror(sprite.frames[sprite.frame_index], pos, width, height);
-        }
-        else draw_image(sprite.frames[sprite.frame_index], pos, width, height);
-    }
-    if (sprite.prev_game_frame == game_frame) {
+void anim_calc(sprite &sprite_frame_count) {
+    if (sprite_frame_count.prev_game_frame == game_frame) {
         return;
     }
-    if (sprite.frames_skipped < sprite.frames_to_skip) {
-        ++sprite.frames_skipped;
+    if (sprite_frame_count.frames_skipped < sprite_frame_count.frames_to_skip) {
+        ++sprite_frame_count.frames_skipped;
     } else {
-        sprite.frames_skipped = 0;
+        sprite_frame_count.frames_skipped = 0;
 
-        ++sprite.frame_index;
-        if (sprite.frame_index >= sprite.frame_count) {
-            sprite.frame_index = sprite.loop ? 0 : sprite.frame_count - 1;
+        ++sprite_frame_count.frame_index;
+        if (sprite_frame_count.frame_index >= sprite_frame_count.frame_count) {
+            sprite_frame_count.frame_index = sprite_frame_count.loop ? 0 : sprite_frame_count.frame_count - 1;
         }
     }
-    sprite.prev_game_frame = game_frame;
+    sprite_frame_count.prev_game_frame = game_frame;
+}
+
+void draw_player_anim(Vector2 pos, float width, float height) {
+    if (!is_player_moving && is_player_on_ground) {
+        draw_image_player(player_idle_sprite.frames[player_idle_sprite.frame_index], pos, width, height);
+        anim_calc(player_idle_sprite);
+    }
+    else {
+        draw_image_player(player_sprite.frames[player_sprite.frame_index], pos, width, height);
+        anim_calc(player_sprite);
+    }
 }
 
 void draw_sprite(sprite &sprite, Vector2 pos, float width, float height) {
@@ -161,6 +167,7 @@ void load_sounds() {
 
     coin_sound = LoadSound("data/sounds/coin.wav");
     exit_sound = LoadSound("data/sounds/exit.wav");
+    main_menu_music = LoadSound("data/sounds/music_main.mp3");
 }
 
 void unload_sounds() {

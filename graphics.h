@@ -31,12 +31,40 @@ void derive_graphics_metrics_from_loaded_level() {
     shift_to_center.y = (screen_size.y - level_height) * 0.5f;
 }
 
+void draw_menu_buttons() {
+    Vector2 mouse_pos = GetMousePosition();
+    Rectangle play_button = {screen_size.x * 0.3f, screen_size.y * 0.75f, screen_size.x * 0.4f, screen_size.y * 0.1f};
+    DrawRectangleRoundedLines(play_button, 0.5f, 10, 2, WHITE);
+    draw_text(::play_button);
+    Rectangle exit_button = {screen_size.x * 0.3f, screen_size.y * 0.87f, screen_size.x * 0.4f, screen_size.y * 0.1f};
+    DrawRectangleRoundedLines(exit_button, 0.5f, 10, 2, WHITE);
+    draw_text(::exit_button);
+    {
+        if (CheckCollisionPointRec(mouse_pos, play_button)) {
+            is_mouse_inside_play_button = true;
+        }
+        else { is_mouse_inside_play_button = false;}
+    }
+    {
+        if (CheckCollisionPointRec(mouse_pos, exit_button) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            exit_condition = true;
+        }
+    }
+}
+
 void draw_menu() {
     ClearBackground(BLACK);
-    draw_text(game_title);
-    draw_text(game_subtitle);
-    if (IsKeyDown(KEY_ENTER)) {
+    Rectangle source = { 0.0f, 0.0f, static_cast<float>(main_menu_image.width), static_cast<float>(main_menu_image.height) };
+    Rectangle destination = { 0, 0, screen_size.x, screen_size.y };
+    DrawTexturePro(main_menu_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
+    draw_menu_buttons();
+
+    if (IsKeyPressed(KEY_ENTER) || (is_mouse_inside_play_button && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) )) {
         GAMESTATE = GAME_PLAY;
+        player_score = 0;
+        player_lifes = 3;
+        level_index = 0;
+        load_level(0);
     }
 }
 
@@ -89,13 +117,13 @@ void draw_level() {
                     draw_sprite(coin_sprite, pos, cell_size);
                     break;
                 case EXIT:
-                    draw_image(exit_image, pos, cell_size);
+                    draw_sprite(exit_sprite, pos, cell_size);
                     break;
                 case SPIKE:
                     draw_image(spike_image, pos, cell_size);
                     break;
                 case SPRING:
-                    draw_image(spring_image, pos, cell_size);
+                    draw_sprite(spring_sprite, pos, cell_size);
                     break;
                 default:
                     break;
@@ -111,8 +139,7 @@ void draw_player() {
         shift_to_center.x + player_pos.x * cell_size,
         shift_to_center.y + player_pos.y * cell_size
     };
-
-    draw_player_anim(player_sprite, pos, cell_size, cell_size);
+    draw_player_anim(pos, cell_size, cell_size);
 }
 
 void draw_pause_menu() {
@@ -175,11 +202,16 @@ void draw_victory_menu() {
 
     draw_text(victory_title);
     draw_text(victory_subtitle);
-    if (IsKeyDown(KEY_SPACE)) {
+    if (IsKeyPressed(KEY_ENTER)) {
         GAMESTATE = GAME_MENU;
-        level_index = 0;
-        load_level(0);
     }
+}
+
+void draw_game_over() {
+    Rectangle source = { 0.0f, 0.0f, static_cast<float>(game_over_image.width), static_cast<float>(game_over_image.height) };
+    Rectangle destination = { 0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()) };
+    DrawTexturePro(game_over_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
+
 }
 
 #endif // GRAPHICS_H

@@ -48,8 +48,8 @@ char LEVEL_3_DATA[] = {
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
     '#', 'E', ' ', ' ', ' ', '*', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', '#',
     '#', '#', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'S', ' ', ' ', 'S', ' ', ' ', ' ', ' ', '#',
+    '#', '#', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', 'S', ' ', ' ', 'S', ' ', ' ', ' ', ' ', '#',
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
@@ -60,6 +60,8 @@ char LEVEL_3_DATA[] = {
     '#', '@', ' ', ' ', 'S', 'S', ' ', ' ', 'J', 'S', 'S', 'S', ' ', ' ', ' ', 'J', '#',
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
 };
+
+
 
 level LEVEL_1 = {
     7, 11,
@@ -129,18 +131,6 @@ struct Text {
     Font* font = &menu_font;
 };
 
-Text game_title = {
-    "Platformer",
-    { 0.50f, 0.50f },
-    100.0f,
-    RED
-};
-
-Text game_subtitle = {
-    "Press Enter to Start",
-    { 0.50f, 0.65f }
-};
-
 Text game_paused = {
     "Press Escape to Resume"
 };
@@ -157,15 +147,28 @@ Text victory_subtitle = {
     { 0.50f, 0.65f }
 };
 
+Text game_over = {
+"You Lose, Press Enter to continue",
+    {0.50, 0.50}, 20, RED
+};
+
+Text play_button = {
+    "PLAY", {0.50, 0.80}, 50, WHITE
+};
+
+Text exit_button = {
+    "EXIT", {0.50, 0.92}, 50, RED
+};
+
 /* Images and Sprites */
 
 Texture2D wall_image;
 Texture2D air_image;
-Texture2D exit_image;
 Texture2D spike_image;
 Texture2D spring_image;
-Texture2D player_stop_image;
 Texture2D heart_image;
+Texture2D main_menu_image;
+Texture2D game_over_image;
 
 struct sprite {
     size_t frame_count    = 0;
@@ -179,11 +182,15 @@ struct sprite {
 
 sprite coin_sprite;
 sprite player_sprite;
+sprite player_idle_sprite;
+sprite spring_sprite;
+sprite exit_sprite;
 
 /* Sounds */
 
 Sound coin_sound;
 Sound exit_sound;
+Sound main_menu_music;
 
 /* Victory Menu Background */
 
@@ -211,7 +218,8 @@ enum game_state {
     GAME_MENU,
     GAME_PLAY,
     GAME_END,
-    GAME_PAUSED
+    GAME_PAUSED,
+    GAME_OVER
 };
 game_state GAMESTATE = GAME_MENU;
 
@@ -222,6 +230,7 @@ game_state GAMESTATE = GAME_MENU;
 void draw_text(Text &text);
 void derive_graphics_metrics_from_loaded_level();
 void draw_menu();
+void draw_menu_buttons();
 void draw_game_overlay();
 void draw_level();
 void draw_player();
@@ -231,6 +240,8 @@ void animate_victory_menu_background();
 void draw_victory_menu_background();
 void draw_victory_menu();
 
+bool is_mouse_inside_play_button = false;
+bool exit_condition = false;
 // LEVEL_H
 
 bool is_colliding(Vector2 pos, char look_for = '#', level &level = current_level);
@@ -255,7 +266,7 @@ void load_images();
 void unload_images();
 
 void draw_image(Texture2D image, Vector2 pos, float width, float height);
-void draw_image_mirror(Texture2D image, Vector2 pos, float width, float height);
+void draw_image_player(Texture2D image, Vector2 pos, float width, float height);
 void draw_image(Texture2D image, Vector2 pos, float size);
 void draw_game_overlay_hearts();
 
@@ -269,7 +280,8 @@ sprite load_sprite(
 void unload_sprite(sprite &sprite);
 void draw_sprite(sprite &sprite, Vector2 pos, float width, float height);
 void draw_sprite(sprite &sprite, Vector2 pos, float size);
-void draw_player_anim(sprite &sprite, Vector2 pos, float width, float height);
+void draw_player_anim(Vector2 pos, float width, float height);
+void anim_calc(sprite &sprite_frame_count);
 
 void load_sounds();
 void unload_sounds();

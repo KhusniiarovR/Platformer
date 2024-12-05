@@ -44,14 +44,16 @@ void update_player() {
         PlaySound(exit_sound);
         load_level(1);
     }
-    if (is_colliding(player_pos, SPRING)) {
-        player_y_velocity = -JUMP_STRENGTH * 1.6;
-        // TODO sound
-    }
     if (is_colliding_sizeable(player_pos, SPIKE, 0.1f)) {
         spawn_player();
-        // TODO sounds
+        player_lifes--;
     }
+    if (is_colliding(player_pos, SPRING)) {
+        player_y_velocity = -JUMP_STRENGTH * 1.6;
+        spring_sprite.loop = true;
+        // TODO sound
+    }
+    else { spring_sprite.loop = false; }
 }
 
 #endif // PLAYER_H

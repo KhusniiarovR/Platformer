@@ -10,7 +10,9 @@
 void update_game() {
     game_frame++;
 
-    // TODO
+    if (player_lifes == 0) {
+        GAMESTATE = GAME_OVER;
+    }
     if (is_player_moving && is_player_on_ground) is_player_moving = false;
     if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
         move_player_horizontally(MOVEMENT_SPEED);
@@ -22,7 +24,7 @@ void update_game() {
         is_player_moving = true;
         player_facing_right = false;
     }
-    // Calculating collisions to decide whether the player is allowed to jump: don't want them to suction cup to the ceiling or jump midair
+
     is_player_on_ground = is_colliding({player_pos.x, player_pos.y + 0.1f}, WALL);
     if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || IsKeyDown(KEY_SPACE)) && is_player_on_ground) {
         player_y_velocity = -JUMP_STRENGTH;
@@ -32,8 +34,6 @@ void update_game() {
 }
 
 void draw_game() {
-    // TODO health
-
     ClearBackground(BLACK);
     draw_level();
     draw_game_overlay();
@@ -42,6 +42,9 @@ void draw_game() {
 
 int main() {
     InitWindow(1024, 480, "Platformer");
+    //InitWindow(1920, 1020, "Platformer");
+    //ToggleBorderlessWindowed();
+    SetExitKey(0);
     SetTargetFPS(60);
 
     load_fonts();
@@ -50,14 +53,20 @@ int main() {
     load_level();
 
     while (!WindowShouldClose()) {
+        if (!IsSoundPlaying(main_menu_music)) {
+            PlaySound(main_menu_music);
+        }
         BeginDrawing();
+        if (exit_condition || IsKeyPressed(KEY_I)) {
+            break;
+        }
         switch (GAMESTATE) {
             case GAME_MENU: {
                 draw_menu();
                 break;
             }
             case GAME_PLAY: {
-                if (IsKeyDown(KEY_Q)) { GAMESTATE = GAME_PAUSED;}
+                if (IsKeyPressed(KEY_ESCAPE)) { GAMESTATE = GAME_PAUSED;}
                 update_game();
                 draw_game();
                 break;
@@ -69,7 +78,13 @@ int main() {
             case GAME_PAUSED: {
                 draw_game();
                 draw_pause_menu();
-                if (IsKeyDown(KEY_E)) { GAMESTATE = GAME_PLAY;}
+                if (IsKeyPressed(KEY_ESCAPE)) { GAMESTATE = GAME_PLAY;}
+                break;
+            }
+            case GAME_OVER: {
+                ClearBackground(BLACK);
+                draw_game_over();
+                if (IsKeyPressed(KEY_ENTER)) { GAMESTATE = GAME_MENU;}
                 break;
             }
         }
