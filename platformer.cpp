@@ -25,9 +25,14 @@ void update_game() {
         player_facing_right = false;
     }
 
-    is_player_on_ground = is_colliding({player_pos.x, player_pos.y + 0.1f}, WALL);
-    if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || IsKeyDown(KEY_SPACE)) && is_player_on_ground) {
+    is_player_on_ground = is_colliding({player_pos.x, player_pos.y + 0.1f}, WALL)
+                       || is_colliding({player_pos.x, player_pos.y + 0.1f}, FALL_WALL);
+    if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && is_player_on_ground) {
         player_y_velocity = -JUMP_STRENGTH;
+    }
+
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyDown(KEY_SPACE)) {
+        sword_attack = true;
     }
 
     update_player();
@@ -41,9 +46,9 @@ void draw_game() {
 }
 
 int main() {
-    InitWindow(1024, 480, "Platformer");
-    //InitWindow(1920, 1020, "Platformer");
-    //ToggleBorderlessWindowed();
+    //InitWindow(1024, 480, "Platformer");
+    InitWindow(1920, 1020, "Platformer");
+    ToggleBorderlessWindowed();
     SetExitKey(0);
     SetTargetFPS(60);
 

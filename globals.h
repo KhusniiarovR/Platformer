@@ -6,6 +6,7 @@
 #include <string>
 #include <cstddef>
 #include <cmath>
+#include <vector>
 
 /* Game Elements */
 
@@ -16,6 +17,8 @@ const char COIN   = '*';
 const char EXIT   = 'E';
 const char SPIKE  = 'S';
 const char SPRING = 'J'; //jump
+const char BREAK_WALL = 'B';
+const char FALL_WALL = 'F';
 
 /* Levels */
 
@@ -36,11 +39,12 @@ char LEVEL_1_DATA[] = {
 
 char LEVEL_2_DATA[] = {
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
-    '#', '@', ' ', ' ', '#', '*', ' ', ' ', ' ', ' ', '#',
+    '#', '@', ' ', ' ', '#', '*', ' ', ' ', ' ', ' ', 'E',
     '#', '#', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', ' ', 'S', 'S', ' ', 'E', '#',
+    '#', ' ', ' ', ' ', 'B', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', 'S', 'S', ' ', '#', '#',
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
 };
 
@@ -55,13 +59,28 @@ char LEVEL_3_DATA[] = {
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', '@', ' ', ' ', 'S', 'S', ' ', ' ', 'J', 'S', 'S', 'S', ' ', ' ', ' ', 'J', '#',
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
 };
 
-
+char LEVEL_4_DATA[] = {
+    '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
+    '#', 'E', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', '#', 'S', ' ', ' ', ' ', ' ', 'S', 'S', ' ', ' ', 'S', ' ', ' ', ' ', ' ', '#',
+    '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'J', '#',
+    '#', '@', ' ', ' ', 'S', ' ', ' ', ' ', ' ', ' ', 'S', ' ', ' ', ' ', ' ', '#', '#',
+    '#', '#', 'F', 'F', '#', 'F', 'F', 'F', 'F', 'F', '#', 'F', 'F', 'F', 'F', '#', '#',
+    '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#',
+    '#', '#', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', '#', '#',
+    '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
+};
 
 level LEVEL_1 = {
     7, 11,
@@ -69,7 +88,7 @@ level LEVEL_1 = {
 };
 
 level LEVEL_2 = {
-    7, 11,
+    8, 11,
     LEVEL_2_DATA
 };
 
@@ -77,17 +96,24 @@ level LEVEL_3 = {
     14, 17,
     LEVEL_3_DATA
 };
+
+level LEVEL_4 = {
+    14, 17,
+    LEVEL_4_DATA
+};
+
 int level_index = 0;
-const int LEVEL_COUNT = 3;
+const int LEVEL_COUNT = 4;
 
 level LEVELS[LEVEL_COUNT] = {
-    LEVEL_1, LEVEL_2, LEVEL_3
+    LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4
 };
 
 /* Loaded Level Data */
 
 level current_level;
 char *current_level_data;
+int offset = -1;
 
 /* Player data */
 
@@ -101,13 +127,15 @@ float player_y_velocity = 0;
 bool is_player_on_ground;
 bool is_player_moving;
 bool player_facing_right = true;
+bool sword_attack = false;
+bool player_die = false;
 
 int player_score = 0;
 int player_lifes = 3;
 
 /* Graphic Metrics */
 
-const float CELL_SCALE = 0.8f; // An aesthetic parameter to add some negative space around level
+const float CELL_SCALE = 1.0f; // An aesthetic parameter to add some negative space around level
 const float SCREEN_SCALE_DIVISOR = 700.0f; // The divisor was found through experimentation
                                            // to scale things accordingly to look pleasant.
 
@@ -169,6 +197,10 @@ Texture2D spring_image;
 Texture2D heart_image;
 Texture2D main_menu_image;
 Texture2D game_over_image;
+Texture2D fire_ball_image;
+Texture2D sword_image;
+Texture2D break_wall_image;
+Texture2D falling_wall_image;
 
 struct sprite {
     size_t frame_count    = 0;
@@ -211,6 +243,7 @@ victory_ball victory_balls[VICTORY_BALL_COUNT];
 /* Frame Counter */
 
 size_t game_frame = 0;
+size_t sword_counter = 0;
 
 /* Game States */
 
@@ -248,7 +281,7 @@ bool is_colliding(Vector2 pos, char look_for = '#', level &level = current_level
 bool is_colliding_sizeable(Vector2 pos, char look_for = '#', float size_x = 1.0f, level &level = current_level);
 char& get_collider(Vector2 pos, char look_for, level &level = current_level);
 
-void load_level(int offset = 0);
+void load_level();
 void unload_level();
 
 // PLAYER_H
@@ -267,6 +300,7 @@ void unload_images();
 
 void draw_image(Texture2D image, Vector2 pos, float width, float height);
 void draw_image_player(Texture2D image, Vector2 pos, float width, float height);
+void draw_image_sword(Texture2D image, Vector2 pos, float width, float height);
 void draw_image(Texture2D image, Vector2 pos, float size);
 void draw_game_overlay_hearts();
 

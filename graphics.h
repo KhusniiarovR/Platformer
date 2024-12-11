@@ -1,6 +1,7 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include "assets.h"
 #include "globals.h"
 
 void draw_text(Text &text) {
@@ -64,7 +65,8 @@ void draw_menu() {
         player_score = 0;
         player_lifes = 3;
         level_index = 0;
-        load_level(0);
+        offset = -1;
+        load_level();
     }
 }
 
@@ -107,8 +109,16 @@ void draw_level() {
                 case SPRING:
                     draw_image(air_image, pos, cell_size);
                     break;
+                case BREAK_WALL:
+                    draw_image(break_wall_image, pos, cell_size);
+                    break;
+                case FALL_WALL:
+                    draw_image(falling_wall_image, pos, cell_size);
+                    break;
                 case WALL:
                     draw_image(wall_image, pos, cell_size);
+                    break;
+                default:
                     break;
             }
             // The second image layer
@@ -130,7 +140,6 @@ void draw_level() {
             }
         }
     }
-
     draw_player();
 }
 
@@ -140,6 +149,9 @@ void draw_player() {
         shift_to_center.y + player_pos.y * cell_size
     };
     draw_player_anim(pos, cell_size, cell_size);
+    if (sword_attack) {
+        draw_image_sword(sword_image, pos, cell_size, cell_size);
+    }
 }
 
 void draw_pause_menu() {

@@ -51,15 +51,17 @@ char& get_collider(Vector2 pos, char look_for, level &level) {
     return level.data[static_cast<int>(roundf(pos.y) * level.columns + roundf(pos.x))];
 }
 
-void load_level(int offset) {
-    level_index += offset;
+void load_level() {
+    if (!player_die) {
+        offset++;
+        level_index = offset;
 
-    if (level_index >= LEVEL_COUNT) {
-        create_victory_menu_background();
-        GAMESTATE = GAME_END;
-        return;
+        if (level_index >= LEVEL_COUNT) {
+            create_victory_menu_background();
+            GAMESTATE = GAME_END;
+            return;
+        }
     }
-
     size_t rows = LEVELS[level_index].rows;
     size_t columns = LEVELS[level_index].columns;
     current_level_data = new char[rows*columns];
@@ -71,7 +73,7 @@ void load_level(int offset) {
     }
 
     current_level = {rows, columns, current_level_data};
-
+    player_die = false;
     spawn_player();
     derive_graphics_metrics_from_loaded_level();
 }

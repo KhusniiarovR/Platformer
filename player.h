@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include "globals.h"
+#include "level.h"
 
 void spawn_player() {
     for (size_t row = 0; row < current_level.rows; ++row) {
@@ -18,7 +19,7 @@ void spawn_player() {
 
 void move_player_horizontally(float delta) {
     float next_x = player_pos.x + delta;
-    if (!is_colliding({next_x, player_pos.y}, WALL)) {
+    if ((!is_colliding({next_x, player_pos.y}, WALL)) && (!is_colliding({next_x, player_pos.y}, BREAK_WALL))) {
         player_pos.x = next_x;
     } else {
         player_pos.x = roundf(player_pos.x);
@@ -29,7 +30,8 @@ void update_player() {
     player_pos.y += player_y_velocity;
     player_y_velocity += GRAVITY_FORCE;
 
-    is_player_on_ground = is_colliding({ player_pos.x, player_pos.y + 0.1f }, WALL);
+    is_player_on_ground = is_colliding({ player_pos.x, player_pos.y + 0.1f }, WALL)
+                        || is_colliding({ player_pos.x, player_pos.y + 0.1f }, FALL_WALL);
     if (is_player_on_ground) {
         player_y_velocity = 0;
         player_pos.y = roundf(player_pos.y);
@@ -42,16 +44,28 @@ void update_player() {
     }
     if (is_colliding(player_pos, EXIT)) {
         PlaySound(exit_sound);
-        load_level(1);
+        load_level();
     }
     if (is_colliding_sizeable(player_pos, SPIKE, 0.1f)) {
-        spawn_player();
+        player_die = true;
+        load_level();
         player_lifes--;
+    }
+    if (is_colliding({player_pos.x, player_pos.y + 0.1f}, FALL_WALL)) {
+        get_collider({player_pos.x, player_pos.y + 0.1f}, FALL_WALL) = ' ';
+        // TODO timer fall_wall
+    }
+    if (sword_attack) {
+        if (is_colliding({player_pos.x + 1, player_pos.y}, BREAK_WALL) && player_facing_right) {
+            get_collider({player_pos.x + 1, player_pos.y}, BREAK_WALL) = '*';
+        }
+        if (is_colliding({player_pos.x - 1, player_pos.y}, BREAK_WALL) && !player_facing_right) {
+            get_collider({player_pos.x - 1, player_pos.y}, BREAK_WALL) = '*';
+        }
     }
     if (is_colliding(player_pos, SPRING)) {
         player_y_velocity = -JUMP_STRENGTH * 1.6;
         spring_sprite.loop = true;
-        // TODO sound
     }
     else { spring_sprite.loop = false; }
 }

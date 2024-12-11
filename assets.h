@@ -23,6 +23,10 @@ void load_images() {
     heart_image   = LoadTexture("data/images/heart.png");
     main_menu_image = LoadTexture("data/images/main_menu.png");
     game_over_image = LoadTexture("data/images/game_over.png");
+    fire_ball_image = LoadTexture("data/images/fire_ball.png");
+    sword_image = LoadTexture("data/images/sword.png");
+    break_wall_image = LoadTexture("data/images/break_wall.png");
+    falling_wall_image = LoadTexture("data/images/falling_wall.png");
     coin_sprite   = load_sprite("data/images/coin/coin",     ".png", 3, true, 18);
     player_sprite = load_sprite("data/images/player/player_move/player", ".png", 3, true, 10);
     player_idle_sprite = load_sprite("data/images/player/player_idle/player_idle", ".png", 2, true, 20);
@@ -38,6 +42,10 @@ void unload_images() {
     UnloadTexture(heart_image);
     UnloadTexture(main_menu_image);
     UnloadTexture(game_over_image);
+    UnloadTexture(fire_ball_image);
+    UnloadTexture(sword_image);
+    UnloadTexture(break_wall_image);
+    UnloadTexture(falling_wall_image);
     unload_sprite(player_sprite);
     unload_sprite(player_idle_sprite);
     unload_sprite(coin_sprite);
@@ -57,10 +65,27 @@ void draw_image(Texture2D image, Vector2 pos, float width, float height) {
 
 void draw_image_player(Texture2D image, Vector2 pos, float width, float height) {
     Rectangle source = { 0.0f, 0.0f, static_cast<float>(image.width), static_cast<float>(image.height)};
+    Rectangle destination = { pos.x, pos.y, width, height };
     if (!player_facing_right) {
         source.width = static_cast<float>(-image.width);
     }
-    Rectangle destination = { pos.x, pos.y, abs(width), height };
+    DrawTexturePro(image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
+}
+
+void draw_image_sword(Texture2D image, Vector2 pos, float width, float height) {
+    sword_counter++;
+    Rectangle source = { 0.0f, height * -0.2f, static_cast<float>(image.width), static_cast<float>(image.height)};
+    Rectangle destination = {pos.x, pos.y, width, height};
+    float cosine = abs(cos(sword_counter / 20 + 30)) * 0.8;
+    if (!player_facing_right) {
+        source.width = static_cast<float>(-image.width);
+        destination.x -= width * cosine;
+    }
+    else { destination.x += width * cosine;}
+    if (cosine - 0.02f < 0) {
+        sword_counter = 0;
+        sword_attack = false;
+    }
     DrawTexturePro(image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
 }
 
@@ -173,6 +198,7 @@ void load_sounds() {
 void unload_sounds() {
     UnloadSound(coin_sound);
     UnloadSound(exit_sound);
+    UnloadSound(main_menu_music);
 }
 
 #endif // IMAGES_H
