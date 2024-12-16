@@ -6,7 +6,6 @@
 #include <string>
 #include <cstddef>
 #include <cmath>
-#include <vector>
 
 /* Game Elements */
 
@@ -16,9 +15,12 @@ const char PLAYER = '@';
 const char COIN   = '*';
 const char EXIT   = 'E';
 const char SPIKE  = 'S';
+const char SPIKE_UP = 's';
 const char SPRING = 'J'; //jump
 const char BREAK_WALL = 'B';
 const char FALL_WALL = 'F';
+const char SLIME_JUMP = 'j';
+const char SLIME_STICKY = 'T';
 
 /* Levels */
 
@@ -66,6 +68,33 @@ char LEVEL_3_DATA[] = {
 };
 
 char LEVEL_4_DATA[] = {
+    '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 's', 's', ' ', ' ', ' ', ' ', '*', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', 'T', ' ', ' ', '#',
+    '#', '@', ' ', ' ', ' ', 'S', ' ', 'S', ' ', 'S', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', 'E', ' ', ' ', ' ', '#',
+    '#', '#', '#', 'T', 'T', '#', 'T', '#', 'T', '#', '#', '#', '#', '#', 'T', '#', '#', '#', '#', '#', 'T', 'T', '#',
+};
+
+char LEVEL_5_DATA[] = {
+    '#', '#', '#', '#', '#', '#', '#',
+    '#', 'B', ' ', ' ', ' ', ' ', '#',
+    '#', '#', ' ', ' ', ' ', ' ', 'T',
+    '#', ' ', ' ', 'j', 'j', ' ', 'T',
+    '#', ' ', ' ', '#', ' ', ' ', 'T',
+    'j', ' ', '#', '#', ' ', ' ', 'T',
+    'j', ' ', 'j', 'T', ' ', ' ', '#',
+    'j', ' ', 'j', 'T', ' ', 'S', '#',
+    'j', ' ', 'j', 'T', ' ', '#', '#',
+    '#', ' ', '#', 'T', ' ', ' ', '#',
+    '#', ' ', '#', '#', ' ', ' ', '#',
+    '#', ' ', ' ', '#', ' ', ' ', '#',
+    '#', '#', ' ', '#', ' ', ' ', '#',
+    '#', '@', ' ', '#', 'S', 'E', '#',
+    '#', '#', '#', '#', '#', '#', '#',
+};
+
+char LEVEL_6_DATA[] = {
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
     '#', 'E', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
@@ -98,15 +127,25 @@ level LEVEL_3 = {
 };
 
 level LEVEL_4 = {
-    14, 17,
+    6, 23,
     LEVEL_4_DATA
 };
 
+level LEVEL_5 = {
+    15, 7,
+    LEVEL_5_DATA
+};
+
+level LEVEL_6 = {
+    14, 17,
+    LEVEL_6_DATA
+};
+
 int level_index = 0;
-const int LEVEL_COUNT = 4;
+const int LEVEL_COUNT = 6;
 
 level LEVELS[LEVEL_COUNT] = {
-    LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4
+    LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6
 };
 
 /* Loaded Level Data */
@@ -117,9 +156,9 @@ int offset = -1;
 
 /* Player data */
 
-const float GRAVITY_FORCE = 0.01f;
-const float JUMP_STRENGTH = 0.27f;
-const float MOVEMENT_SPEED = 0.1f;
+float GRAVITY_FORCE = 0.01f;
+float JUMP_STRENGTH = 0.27f;
+float MOVEMENT_SPEED = 0.1f;
 
 Vector2 player_pos;
 float player_y_velocity = 0;
@@ -193,6 +232,7 @@ Text exit_button = {
 Texture2D wall_image;
 Texture2D air_image;
 Texture2D spike_image;
+Texture2D spike_up_image;
 Texture2D spring_image;
 Texture2D heart_image;
 Texture2D main_menu_image;
@@ -201,6 +241,8 @@ Texture2D fire_ball_image;
 Texture2D sword_image;
 Texture2D break_wall_image;
 Texture2D falling_wall_image;
+Texture2D slime_jump_image;
+Texture2D slime_sticky_image;
 
 struct sprite {
     size_t frame_count    = 0;
@@ -249,6 +291,7 @@ size_t sword_counter = 0;
 
 enum game_state {
     GAME_MENU,
+    GAME_LEVEL_SELECTION,
     GAME_PLAY,
     GAME_END,
     GAME_PAUSED,
@@ -264,6 +307,7 @@ void draw_text(Text &text);
 void derive_graphics_metrics_from_loaded_level();
 void draw_menu();
 void draw_menu_buttons();
+void draw_selection_menu();
 void draw_game_overlay();
 void draw_level();
 void draw_player();
@@ -324,5 +368,6 @@ void unload_sounds();
 
 float rand_from_to(float from, float to);
 float rand_up_to(float to);
+void destroy_fall_wall(Vector2 pos);
 
 #endif // GLOBALS_H

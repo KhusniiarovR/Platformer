@@ -19,6 +19,7 @@ void load_images() {
     wall_image    = LoadTexture("data/images/wall.png");
     air_image     = LoadTexture("data/images/air.png");
     spike_image   = LoadTexture("data/images/spike.png");
+    spike_up_image = LoadTexture("data/images/spike_up.png");
     spring_image  = LoadTexture("data/images/spring_idle.png");
     heart_image   = LoadTexture("data/images/heart.png");
     main_menu_image = LoadTexture("data/images/main_menu.png");
@@ -27,6 +28,8 @@ void load_images() {
     sword_image = LoadTexture("data/images/sword.png");
     break_wall_image = LoadTexture("data/images/break_wall.png");
     falling_wall_image = LoadTexture("data/images/falling_wall.png");
+    slime_jump_image = LoadTexture("data/images/slime_jump.png");
+    slime_sticky_image = LoadTexture("data/images/slime_sticky.png");
     coin_sprite   = load_sprite("data/images/coin/coin",     ".png", 3, true, 18);
     player_sprite = load_sprite("data/images/player/player_move/player", ".png", 3, true, 10);
     player_idle_sprite = load_sprite("data/images/player/player_idle/player_idle", ".png", 2, true, 20);
@@ -38,6 +41,7 @@ void unload_images() {
     UnloadTexture(wall_image);
     UnloadTexture(air_image);
     UnloadTexture(spike_image);
+    UnloadTexture(spike_up_image);
     UnloadTexture(spring_image);
     UnloadTexture(heart_image);
     UnloadTexture(main_menu_image);
@@ -46,6 +50,8 @@ void unload_images() {
     UnloadTexture(sword_image);
     UnloadTexture(break_wall_image);
     UnloadTexture(falling_wall_image);
+    UnloadTexture(slime_jump_image);
+    UnloadTexture(slime_sticky_image);
     unload_sprite(player_sprite);
     unload_sprite(player_idle_sprite);
     unload_sprite(coin_sprite);

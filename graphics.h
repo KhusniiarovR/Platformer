@@ -70,6 +70,22 @@ void draw_menu() {
     }
 }
 
+void draw_selection_menu() {
+    ClearBackground(BLACK);
+    Rectangle source = { 0.0f, 0.0f, static_cast<float>(main_menu_image.width), static_cast<float>(main_menu_image.height) };
+    Rectangle destination = { 0, 0, screen_size.x, screen_size.y };
+    DrawTexturePro(main_menu_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
+    Vector2 mouse_pos = GetMousePosition();
+    for (int i = 1; i <= LEVEL_COUNT; i++) {
+        float unit = screen_size.x/7;
+        DrawRectangleLines(unit * i - screen_size.x/28, 0.1f * screen_size.y, screen_size.x/14, screen_size.y/10, WHITE);
+        Text level_number = {std::to_string(i), {(unit * i) / screen_size.x,
+            (screen_size.y * 0.15f) / screen_size.y}, 32};
+        draw_text(level_number);
+        //if (CheckCollisionPointRec(mouse_pos, )) {}
+    }
+}
+
 void draw_game_overlay() {
     Text score = {
         "Score " + std::to_string(player_score),
@@ -106,6 +122,9 @@ void draw_level() {
                 case SPIKE:
                     draw_image(air_image, pos, cell_size);
                     break;
+                case SPIKE_UP:
+                    draw_image(air_image, pos, cell_size);
+                    break;
                 case SPRING:
                     draw_image(air_image, pos, cell_size);
                     break;
@@ -114,6 +133,12 @@ void draw_level() {
                     break;
                 case FALL_WALL:
                     draw_image(falling_wall_image, pos, cell_size);
+                    break;
+                case SLIME_JUMP:
+                    draw_image(slime_jump_image, pos, cell_size);
+                    break;
+                case SLIME_STICKY:
+                    draw_image(slime_sticky_image, pos, cell_size);
                     break;
                 case WALL:
                     draw_image(wall_image, pos, cell_size);
@@ -131,6 +156,9 @@ void draw_level() {
                     break;
                 case SPIKE:
                     draw_image(spike_image, pos, cell_size);
+                    break;
+                case SPIKE_UP:
+                    draw_image(spike_up_image, pos, cell_size);
                     break;
                 case SPRING:
                     draw_sprite(spring_sprite, pos, cell_size);
