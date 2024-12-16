@@ -61,12 +61,7 @@ void draw_menu() {
     draw_menu_buttons();
 
     if (IsKeyPressed(KEY_ENTER) || (is_mouse_inside_play_button && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) )) {
-        GAMESTATE = GAME_PLAY;
-        player_score = 0;
-        player_lifes = 3;
-        level_index = 0;
-        offset = -1;
-        load_level();
+        GAMESTATE = GAME_LEVEL_SELECTION;
     }
 }
 
@@ -75,14 +70,31 @@ void draw_selection_menu() {
     Rectangle source = { 0.0f, 0.0f, static_cast<float>(main_menu_image.width), static_cast<float>(main_menu_image.height) };
     Rectangle destination = { 0, 0, screen_size.x, screen_size.y };
     DrawTexturePro(main_menu_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
+    if (IsKeyPressed(KEY_ENTER)) {
+        GAMESTATE = GAME_PLAY;
+    }
     Vector2 mouse_pos = GetMousePosition();
-    for (int i = 1; i <= LEVEL_COUNT; i++) {
-        float unit = screen_size.x/7;
-        DrawRectangleLines(unit * i - screen_size.x/28, 0.1f * screen_size.y, screen_size.x/14, screen_size.y/10, WHITE);
-        Text level_number = {std::to_string(i), {(unit * i) / screen_size.x,
-            (screen_size.y * 0.15f) / screen_size.y}, 32};
-        draw_text(level_number);
-        //if (CheckCollisionPointRec(mouse_pos, )) {}
+    for (int j = 1; j <= LEVEL_COUNT / 5 + 1; j++) {
+        for (int i = 1; i <= 5; i++) {
+            int number = (j-1) * 5 + i;
+            if (number > LEVEL_COUNT) {
+                return;
+            }
+            float unit = screen_size.x/7;
+            Rectangle rect = {unit * i - screen_size.x/28, 0.2f * j * screen_size.y, screen_size.x/14, screen_size.y/10};
+            DrawRectangleRec(rect, {0,0,0,50});
+            Text level_number = {std::to_string(number), {(unit * i) / screen_size.x,
+            (screen_size.y * 0.2f * j + screen_size.y * 0.05f) / screen_size.y}, 32, GREEN};
+            draw_text(level_number);
+            if (CheckCollisionPointRec(mouse_pos, rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                GAMESTATE = GAME_PLAY;
+                offset = number - 2;
+                player_score = 0;
+                player_lifes = 3;
+                level_index = 0;
+                load_level();
+            }
+        }
     }
 }
 
