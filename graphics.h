@@ -70,19 +70,31 @@ void draw_selection_menu() {
     Rectangle source = { 0.0f, 0.0f, static_cast<float>(main_menu_image.width), static_cast<float>(main_menu_image.height) };
     Rectangle destination = { 0, 0, screen_size.x, screen_size.y };
     DrawTexturePro(main_menu_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
+    Vector2 mouse_pos = GetMousePosition();
+    Rectangle back_button_rec = {0.005f * screen_size.x, 0.01f * screen_size.y,
+                             screen_size.x * 0.2f, screen_size.y * 0.13f};
+    DrawRectangleRounded(back_button_rec, 1, 4, {0,0,0,70});
+    draw_text(back_button);
     if (IsKeyPressed(KEY_ENTER)) {
         GAMESTATE = GAME_PLAY;
+        offset = -1;
+        player_score = 0;
+        player_lifes = 3;
+        level_index = 0;
+        load_level();
     }
-    Vector2 mouse_pos = GetMousePosition();
+    if (IsKeyPressed(KEY_ESCAPE) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, back_button_rec))) {
+        GAMESTATE = GAME_MENU;
+    }
     for (int j = 1; j <= LEVEL_COUNT / 5 + 1; j++) {
         for (int i = 1; i <= 5; i++) {
             int number = (j-1) * 5 + i;
             if (number > LEVEL_COUNT) {
                 return;
             }
-            float unit = screen_size.x/7;
-            Rectangle rect = {unit * i - screen_size.x/28, 0.2f * j * screen_size.y, screen_size.x/14, screen_size.y/10};
-            DrawRectangleRec(rect, {0,0,0,50});
+            float unit = screen_size.x/6;
+            Rectangle rect = {unit * i - screen_size.x/24, 0.2f * j * screen_size.y, screen_size.x/12, screen_size.y/10};
+            DrawRectangleRounded(rect, 1, 6, {0,0,0,50});
             Text level_number = {std::to_string(number), {(unit * i) / screen_size.x,
             (screen_size.y * 0.2f * j + screen_size.y * 0.05f) / screen_size.y}, 32, GREEN};
             draw_text(level_number);
@@ -196,6 +208,15 @@ void draw_player() {
 
 void draw_pause_menu() {
     draw_text(game_paused);
+    Vector2 mouse_pos = GetMousePosition();
+    Rectangle back_button_rec = {0.005f * screen_size.x, 0.01f * screen_size.y,
+                             screen_size.x * 0.2f, screen_size.y * 0.13f};
+    DrawRectangleRounded(back_button_rec, 1, 4, {255,255,255,70});
+    draw_text(back_button);
+    if (IsKeyPressed(KEY_ESCAPE) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, back_button_rec))) {
+        GAMESTATE = GAME_MENU;
+    }
+    if (IsKeyPressed(KEY_ENTER)) { GAMESTATE = GAME_PLAY;}
 }
 
 void create_victory_menu_background() {
@@ -251,7 +272,6 @@ void draw_victory_menu() {
 
     animate_victory_menu_background();
     draw_victory_menu_background();
-
     draw_text(victory_title);
     draw_text(victory_subtitle);
     if (IsKeyPressed(KEY_ENTER)) {
@@ -260,10 +280,24 @@ void draw_victory_menu() {
 }
 
 void draw_game_over() {
+    ClearBackground({81, 86, 120, 255});
     Rectangle source = { 0.0f, 0.0f, static_cast<float>(game_over_image.width), static_cast<float>(game_over_image.height) };
-    Rectangle destination = { 0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()) };
+    Rectangle destination = { 0, 0, GetScreenWidth()/2.0f, GetScreenHeight()/1.0f };
     DrawTexturePro(game_over_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
-
+    Vector2 mouse_pos = GetMousePosition();
+    Rectangle exit_button = {screen_size.x * 0.6f, screen_size.y * 0.65f, screen_size.x * 0.3f, screen_size.y * 0.1f};
+    DrawRectangleRoundedLines(exit_button, 0.5f, 10, 2, WHITE);
+    draw_text(exit_button_game_over);
+    if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, exit_button)) {
+        GAMESTATE = GAME_MENU;
+    }
+    if (IsKeyPressed(KEY_Z)) {
+        GAMESTATE = GAME_PLAY;
+        offset--;
+        player_lifes = 3;
+        player_score = 0;
+        load_level();
+    }
 }
 
 #endif // GRAPHICS_H

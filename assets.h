@@ -195,16 +195,17 @@ void draw_sprite(sprite &sprite, Vector2 pos, float width, float height) {
 
 void load_sounds() {
     InitAudioDevice();
-
     coin_sound = LoadSound("data/sounds/coin.wav");
     exit_sound = LoadSound("data/sounds/exit.wav");
     main_menu_music = LoadSound("data/sounds/music_main.mp3");
+    win_sound = LoadSound("data/sounds/win.mp3");
 }
 
 void unload_sounds() {
     UnloadSound(coin_sound);
     UnloadSound(exit_sound);
     UnloadSound(main_menu_music);
+    UnloadSound(win_sound);
 }
 
 #endif // IMAGES_H

@@ -85,19 +85,18 @@ int main() {
                 break;
             }
             case GAME_END: {
+                //TODO массив уровней бул для проверки и PlaySound(win_sound);
                 draw_victory_menu();
                 break;
             }
             case GAME_PAUSED: {
                 draw_game();
                 draw_pause_menu();
-                if (IsKeyPressed(KEY_ESCAPE)) { GAMESTATE = GAME_PLAY;}
                 break;
             }
             case GAME_OVER: {
                 ClearBackground(BLACK);
                 draw_game_over();
-                if (IsKeyPressed(KEY_ENTER)) { GAMESTATE = GAME_MENU;}
                 break;
             }
         }
