@@ -30,6 +30,7 @@ void load_images() {
     falling_wall_image = LoadTexture("data/images/falling_wall.png");
     slime_jump_image = LoadTexture("data/images/slime_jump.png");
     slime_sticky_image = LoadTexture("data/images/slime_sticky.png");
+    ice_image = LoadTexture("data/images/ice.png");
     coin_sprite   = load_sprite("data/images/coin/coin",     ".png", 3, true, 18);
     player_sprite = load_sprite("data/images/player/player_move/player", ".png", 3, true, 10);
     player_idle_sprite = load_sprite("data/images/player/player_idle/player_idle", ".png", 2, true, 20);
@@ -52,6 +53,7 @@ void unload_images() {
     UnloadTexture(falling_wall_image);
     UnloadTexture(slime_jump_image);
     UnloadTexture(slime_sticky_image);
+    UnloadTexture(ice_image);
     unload_sprite(player_sprite);
     unload_sprite(player_idle_sprite);
     unload_sprite(coin_sprite);

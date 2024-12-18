@@ -21,6 +21,7 @@ const char BREAK_WALL = 'B';
 const char FALL_WALL = 'F';
 const char SLIME_JUMP = 'j';
 const char SLIME_STICKY = 'T';
+const char ICE = 'I';
 
 /* Levels */
 
@@ -111,7 +112,16 @@ char LEVEL_6_DATA[] = {
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
 };
 
-char LEVEL_7_DATA[] = {
+char LEVEL_7_DATA[] {
+        '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
+        '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 's', 's', '*', '#',
+        '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+        '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+        '#', '@', ' ', ' ', ' ', 'S', ' ', 'S', ' ', 'S', ' ', ' ', 'E', '#',
+        '#', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', '#',
+};
+
+char LEVEL_8_DATA[] = {
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
     '#', 'B', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 's', 's', 's', 's', '#',
     '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
@@ -155,15 +165,19 @@ level LEVEL_6 = {
 };
 
 level LEVEL_7 = {
-    10, 17,
+    6, 14,
     LEVEL_7_DATA
+};
+level LEVEL_8 = {
+    10, 17,
+    LEVEL_8_DATA
 };
 
 int level_index = 0;
-const int LEVEL_COUNT = 7;
+const int LEVEL_COUNT = 8;
 
 level LEVELS[LEVEL_COUNT] = {
-    LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7
+    LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8
 };
 
 /* Loaded Level Data */
@@ -269,6 +283,7 @@ Texture2D break_wall_image;
 Texture2D falling_wall_image;
 Texture2D slime_jump_image;
 Texture2D slime_sticky_image;
+Texture2D ice_image;
 
 struct sprite {
     size_t frame_count    = 0;

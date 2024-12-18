@@ -1,5 +1,4 @@
 #include "raylib.h"
-
 #include "globals.h"
 #include "level.h"
 #include "player.h"
@@ -29,7 +28,8 @@ void update_game() {
                        || is_colliding({player_pos.x, player_pos.y + 0.1f}, FALL_WALL)
                        || is_colliding({player_pos.x, player_pos.y + 0.1f}, SLIME_STICKY)
                        || (is_colliding({player_pos.x + 0.1f, player_pos.y}, SLIME_JUMP) && is_player_moving && player_facing_right)
-                       || (is_colliding({player_pos.x - 0.1f, player_pos.y}, SLIME_JUMP) && is_player_moving && !player_facing_right);
+                       || (is_colliding({player_pos.x - 0.1f, player_pos.y}, SLIME_JUMP) && is_player_moving && !player_facing_right)
+                       || is_colliding({player_pos.x, player_pos.y + 0.1f}, ICE);
 
     if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && is_player_on_ground) {
         player_y_velocity = -JUMP_STRENGTH;

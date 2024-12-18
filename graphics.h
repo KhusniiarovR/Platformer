@@ -164,6 +164,9 @@ void draw_level() {
                 case SLIME_STICKY:
                     draw_image(slime_sticky_image, pos, cell_size);
                     break;
+                case ICE:
+                    draw_image(ice_image, pos, cell_size);
+                    break;
                 case WALL:
                     draw_image(wall_image, pos, cell_size);
                     break;

@@ -36,7 +36,8 @@ void update_player() {
     is_player_on_ground = is_colliding({ player_pos.x, player_pos.y + 0.1f }, WALL)
                         || is_colliding({ player_pos.x, player_pos.y + 0.1f }, FALL_WALL)
                         || is_colliding({ player_pos.x, player_pos.y + 0.1f }, SLIME_STICKY)
-                        || is_colliding({ player_pos.x, player_pos.y +0.1f }, SLIME_JUMP);
+                        || is_colliding({ player_pos.x, player_pos.y +0.1f }, SLIME_JUMP)
+                        || is_colliding({ player_pos.x, player_pos.y + 0.1f }, ICE);
     if (is_player_on_ground) {
         player_y_velocity = 0;
         player_pos.y = roundf(player_pos.y);
@@ -55,6 +56,17 @@ void update_player() {
         player_die = true;
         load_level();
         player_lifes--;
+    }
+    if (is_colliding(player_pos, ICE)) {
+        if (is_player_moving) {
+            if (player_facing_right) {
+                player_pos.x += 100.0f;
+            }
+            else {
+                player_pos.x -= 100.0f;
+            }
+        }
+        // TODO ice_logic
     }
     if (is_colliding({player_pos.x, player_pos.y + 0.1f}, SLIME_JUMP)) {
         JUMP_STRENGTH = 0.10f;
