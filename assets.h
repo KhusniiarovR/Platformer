@@ -31,11 +31,12 @@ void load_images() {
     slime_jump_image = LoadTexture("data/images/slime_jump.png");
     slime_sticky_image = LoadTexture("data/images/slime_sticky.png");
     ice_image = LoadTexture("data/images/ice.png");
-    coin_sprite   = load_sprite("data/images/coin/coin",     ".png", 3, true, 18);
+    coin_sprite   = load_sprite("data/images/coin/coin", ".png", 3, true, 18);
     player_sprite = load_sprite("data/images/player/player_move/player", ".png", 3, true, 10);
     player_idle_sprite = load_sprite("data/images/player/player_idle/player_idle", ".png", 2, true, 20);
     spring_sprite = load_sprite("data/images/spring/spring", ".png", 4, false, 1);
     exit_sprite = load_sprite("data/images/exit/exit", ".png", 3, true, 30);
+    conveyor_sprite = load_sprite("data/images/conveyor/conveyor", ".png", 2, true, 30);
 }
 
 void unload_images() {
@@ -59,6 +60,7 @@ void unload_images() {
     unload_sprite(coin_sprite);
     unload_sprite(spring_sprite);
     unload_sprite(exit_sprite);
+    unload_sprite(conveyor_sprite);
 }
 
 void draw_image(Texture2D image, Vector2 pos, float size) {

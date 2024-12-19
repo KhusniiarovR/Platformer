@@ -152,6 +152,9 @@ void draw_level() {
                 case SPRING:
                     draw_image(air_image, pos, cell_size);
                     break;
+                case CONVEYOR:
+                    draw_image(air_image, pos, cell_size);
+                break;
                 case BREAK_WALL:
                     draw_image(break_wall_image, pos, cell_size);
                     break;
@@ -163,9 +166,6 @@ void draw_level() {
                     break;
                 case SLIME_STICKY:
                     draw_image(slime_sticky_image, pos, cell_size);
-                    break;
-                case ICE:
-                    draw_image(ice_image, pos, cell_size);
                     break;
                 case WALL:
                     draw_image(wall_image, pos, cell_size);
@@ -189,6 +189,9 @@ void draw_level() {
                     break;
                 case SPRING:
                     draw_sprite(spring_sprite, pos, cell_size);
+                    break;
+                case CONVEYOR:
+                    draw_sprite(conveyor_sprite, pos, cell_size);
                     break;
                 default:
                     break;
@@ -289,12 +292,17 @@ void draw_game_over() {
     DrawTexturePro(game_over_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
     Vector2 mouse_pos = GetMousePosition();
     Rectangle exit_button = {screen_size.x * 0.6f, screen_size.y * 0.65f, screen_size.x * 0.3f, screen_size.y * 0.1f};
-    DrawRectangleRoundedLines(exit_button, 0.5f, 10, 2, WHITE);
+    DrawRectangleRoundedLines(exit_button, 0.5f, 10, 2, RED);
     draw_text(exit_button_game_over);
+    Rectangle play_again_button = {screen_size.x * 0.6f, screen_size.y * 0.50f, screen_size.x * 0.3f, screen_size.y * 0.1f};
+    DrawRectangleRoundedLines(play_again_button, 0.5f, 10, 2, GREEN);
+    draw_text(::play_again_button);
+    draw_text(game_over1);
+    draw_text(game_over2);
     if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, exit_button)) {
         GAMESTATE = GAME_MENU;
     }
-    if (IsKeyPressed(KEY_Z)) {
+    if (IsKeyPressed(KEY_Z) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, play_again_button)) {
         GAMESTATE = GAME_PLAY;
         offset--;
         player_lifes = 3;

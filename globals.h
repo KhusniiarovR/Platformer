@@ -23,9 +23,10 @@ const char FALL_WALL = 'F';
 const char SLIME_JUMP = 'j';
 const char SLIME_STICKY = 'T';
 const char ICE = 'I';
+const char CONVEYOR = 'C';
 
-const char elements[9] = {'*', 'S', 's', 'J', 'B', 'F', 'j', 'T', 'I'};
-const char wall_elements[6] = {'#', 'B', 'F', 'j', 'T', 'I'};
+const char elements[10] = {'*', 'S', 's', 'J', 'B', 'F', 'j', 'T', 'I', 'C'};
+const char wall_elements[7] = {'#', 'B', 'F', 'j', 'T', 'I', 'C'};
 
 /* Levels */
 
@@ -120,11 +121,11 @@ char LEVEL_6_DATA[] = {
 
 char LEVEL_7_DATA[] {
         '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
-        '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 's', 's', '*', '#',
+        '#', ' ', ' ', 's', ' ', ' ', ' ', ' ', ' ', ' ', 's', ' ', '*', '#',
         '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
         '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
         '#', '@', ' ', ' ', ' ', 'S', ' ', 'S', ' ', 'S', ' ', ' ', 'E', '#',
-        '#', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', '#',
+        '#', 'C', 'C', 'C', 'C', '#', 'C', '#', 'C', '#', 'C', 'C', 'C', '#',
 };
 
 char LEVEL_8_DATA[] = {
@@ -185,8 +186,8 @@ level LEVEL_6 = {
 level LEVEL_7 = {
     6, 14,
     LEVEL_7_DATA,
-    {'*', 'S', 'I'},
-    {'#', 'I'}
+    {'*', 'S', 'C'},
+    {'#', 'C'}
 };
 level LEVEL_8 = {
     10, 17,
@@ -270,11 +271,6 @@ Text victory_subtitle = {
     { 0.50f, 0.65f }
 };
 
-Text game_over = {
-"You Lose, Press Enter to continue",
-    {0.50, 0.50}, 20, RED
-};
-
 Text play_button = {
     "PLAY", {0.50, 0.80}, 50, WHITE
 };
@@ -288,7 +284,19 @@ Text back_button = {
 };
 
 Text exit_button_game_over = {
-    "MENU", {0.75f, 0.7}, 50, WHITE
+    "MENU", {0.75f, 0.7f}, 50, RED
+};
+
+Text play_again_button = {
+    "AGAIN", {0.75f, 0.55f}, 50, GREEN
+};
+
+Text game_over1 = {
+    "YOU LOSE", {0.70f, 0.2f}, 50, BLACK
+};
+
+Text game_over2 = {
+    "PRESS ENTER", {0.73f, 0.3f}, 50, BLACK
 };
 
 /* Images and Sprites */
@@ -324,6 +332,7 @@ sprite player_sprite;
 sprite player_idle_sprite;
 sprite spring_sprite;
 sprite exit_sprite;
+sprite conveyor_sprite;
 
 /* Sounds */
 

@@ -19,13 +19,15 @@ void spawn_player() {
 
 void move_player_horizontally(float delta) {
     float next_x = player_pos.x + delta;
-    if (!is_colliding({next_x, player_pos.y}, WALL)
-        && !is_colliding({next_x, player_pos.y}, BREAK_WALL)
-        && !is_colliding({next_x, player_pos.y}, SLIME_STICKY)
-        && !is_colliding({next_x, player_pos.y}, SLIME_JUMP)) {
-        player_pos.x = next_x;
+    bool collision_wall = false;
+    for (int i = 0; i < current_walls.size(); i++) {
+        if (is_colliding({next_x, player_pos.y}, current_walls[i])) {
+            collision_wall = true;
+            break;
         }
-    else { player_pos.x = roundf(player_pos.x);}
+    }
+    if (collision_wall) { player_pos.x = roundf(player_pos.x); }
+    else { player_pos.x = next_x; }
 }
 
 void move_player() {
@@ -50,11 +52,12 @@ void move_player() {
             break;
         }
     }
-    if (is_colliding({player_pos.x + 0.1f, player_pos.y}, SLIME_JUMP) && is_player_moving && player_facing_right) {
+    if ((is_colliding({player_pos.x + 0.1f, player_pos.y}, SLIME_JUMP) && player_facing_right) ||
+        (is_colliding({player_pos.x - 0.1f, player_pos.y}, SLIME_JUMP) && !player_facing_right) && is_player_moving) {
         is_player_on_ground = true;
     }
-    if (is_colliding({player_pos.x - 0.1f, player_pos.y}, SLIME_JUMP) && is_player_moving && !player_facing_right) {
-        is_player_on_ground = true;
+    if (is_colliding({player_pos.x, player_pos.y + 0.1f}, SLIME_JUMP)) {
+        is_player_on_ground = false;
     }
 
     if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && is_player_on_ground) {
@@ -70,17 +73,18 @@ void update_player() {
     player_pos.y += player_y_velocity;
     player_y_velocity += GRAVITY_FORCE;
     is_player_on_ground = false;
-    // TODO slime_jump bug
-    for (int i = 0; i < current_walls.size(); ++i) {
+    for (int i = 0; i < current_walls.size(); i++) {
         if (is_colliding({ player_pos.x, player_pos.y + 0.1f }, current_walls[i])) {
             is_player_on_ground = true;
             break;
         }
     }
+
     if (is_player_on_ground) {
         player_y_velocity = 0;
         player_pos.y = roundf(player_pos.y);
     }
+
     for (int i = 0; i < current_block.size(); i++) {
         switch (current_block[i]) {
             case COIN: {
@@ -97,17 +101,9 @@ void update_player() {
                     player_lifes--;
                 }
             } break;
-            case ICE: {
-                if (is_colliding(player_pos, ICE)) {
-                    if (is_player_moving) {
-                        if (player_facing_right) {
-                            player_pos.x += 100.0f;
-                        }
-                        else {
-                            player_pos.x -= 100.0f;
-                        }
-                    }
-                    // TODO ice_logic
+            case CONVEYOR: {
+                if (is_colliding({player_pos.x, player_pos.y + 0.1f}, CONVEYOR)) {
+                    move_player_horizontally(-MOVEMENT_SPEED * 0.1f);
                 }
             } break;
             case SLIME_JUMP: {

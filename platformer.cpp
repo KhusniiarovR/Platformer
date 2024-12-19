@@ -38,10 +38,10 @@ int main() {
         if (!IsSoundPlaying(main_menu_music)) {
             PlaySound(main_menu_music);
         }
-        BeginDrawing();
         if (exit_condition || IsKeyPressed(KEY_I)) {
             break;
         }
+        BeginDrawing();
         switch (GAMESTATE) {
             case GAME_MENU: {
                 draw_menu();
