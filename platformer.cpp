@@ -8,37 +8,10 @@
 
 void update_game() {
     game_frame++;
-
     if (player_lifes == 0) {
         GAMESTATE = GAME_OVER;
     }
-    if (is_player_moving && is_player_on_ground) is_player_moving = false;
-    if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
-        move_player_horizontally(MOVEMENT_SPEED);
-        is_player_moving = true;
-        player_facing_right = true;
-    }
-    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
-        move_player_horizontally(-MOVEMENT_SPEED);
-        is_player_moving = true;
-        player_facing_right = false;
-    }
-
-    is_player_on_ground = is_colliding({player_pos.x, player_pos.y + 0.1f}, WALL)
-                       || is_colliding({player_pos.x, player_pos.y + 0.1f}, FALL_WALL)
-                       || is_colliding({player_pos.x, player_pos.y + 0.1f}, SLIME_STICKY)
-                       || (is_colliding({player_pos.x + 0.1f, player_pos.y}, SLIME_JUMP) && is_player_moving && player_facing_right)
-                       || (is_colliding({player_pos.x - 0.1f, player_pos.y}, SLIME_JUMP) && is_player_moving && !player_facing_right)
-                       || is_colliding({player_pos.x, player_pos.y + 0.1f}, ICE);
-
-    if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && is_player_on_ground) {
-        player_y_velocity = -JUMP_STRENGTH;
-    }
-
-    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyDown(KEY_SPACE)) {
-        sword_attack = true;
-    }
-
+    move_player();
     update_player();
 }
 

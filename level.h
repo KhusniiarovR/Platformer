@@ -66,6 +66,13 @@ void load_level() {
     size_t columns = LEVELS[level_index].columns;
     current_level_data = new char[rows*columns];
 
+    for (int i = 0; i < LEVELS[level_index].blocks.size(); i++) {
+        current_block.push_back(LEVELS[level_index].blocks[i]);
+    }
+    for (size_t i = 0; i < LEVELS[level_index].wall_blocks.size(); i++) {
+        current_walls.push_back(LEVELS[level_index].wall_blocks[i]);
+    }
+
     for (int row = 0; row < rows; row++) {
         for (int column = 0; column < columns; column++) {
             current_level_data[row*columns + column] = LEVELS[level_index].data[row*columns + column];

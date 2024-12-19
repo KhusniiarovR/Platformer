@@ -6,6 +6,7 @@
 #include <string>
 #include <cstddef>
 #include <cmath>
+#include <vector>
 
 /* Game Elements */
 
@@ -23,11 +24,16 @@ const char SLIME_JUMP = 'j';
 const char SLIME_STICKY = 'T';
 const char ICE = 'I';
 
+const char elements[9] = {'*', 'S', 's', 'J', 'B', 'F', 'j', 'T', 'I'};
+const char wall_elements[6] = {'#', 'B', 'F', 'j', 'T', 'I'};
+
 /* Levels */
 
 struct level {
     size_t rows = 0, columns = 0;
     char *data = nullptr;
+    std::vector<char> blocks;
+    std::vector<char> wall_blocks;
 };
 
 char LEVEL_1_DATA[] = {
@@ -108,7 +114,7 @@ char LEVEL_6_DATA[] = {
     '#', '@', ' ', ' ', 'S', ' ', ' ', ' ', ' ', ' ', 'S', ' ', ' ', ' ', ' ', '#', '#',
     '#', '#', 'F', 'F', '#', 'F', 'F', 'F', 'F', 'F', '#', 'F', 'F', 'F', 'F', '#', '#',
     '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#',
-    '#', '#', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', '#', '#',
+    '#', '#', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', '*', 'S', 'S', '#', '#',
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
 };
 
@@ -136,41 +142,57 @@ char LEVEL_8_DATA[] = {
 
 level LEVEL_1 = {
     7, 11,
-    LEVEL_1_DATA
+    LEVEL_1_DATA,
+    {'*', 'S'},
+    {'#'}
 };
 
 level LEVEL_2 = {
     8, 11,
-    LEVEL_2_DATA
+    LEVEL_2_DATA,
+    {'*', 'S', 'B'},
+    {'#', 'B'}
 };
 
 level LEVEL_3 = {
     14, 17,
-    LEVEL_3_DATA
+    LEVEL_3_DATA,
+    {'*', 'S', 'J'},
+    {'#'}
 };
 
 level LEVEL_4 = {
     6, 23,
-    LEVEL_4_DATA
+    LEVEL_4_DATA,
+    {'*', 'S', 's', 'T'},
+    {'#', 'T'}
 };
 
 level LEVEL_5 = {
     15, 7,
-    LEVEL_5_DATA
+    LEVEL_5_DATA,
+    {'*', 'S', 'B', 'j', 'T'},
+    {'#' ,'B', 'j', 'T'}
 };
 
 level LEVEL_6 = {
     14, 17,
-    LEVEL_6_DATA
+    LEVEL_6_DATA,
+    {'*', 'S', 'F', 'J'},
+    {'#', 'F'}
 };
 
 level LEVEL_7 = {
     6, 14,
-    LEVEL_7_DATA
+    LEVEL_7_DATA,
+    {'*', 'S', 'I'},
+    {'#', 'I'}
 };
 level LEVEL_8 = {
     10, 17,
-    LEVEL_8_DATA
+    LEVEL_8_DATA,
+    {'*', 'S', 's', 'B', 'J', 'j'},
+    {'#', 'B', 'j'}
 };
 
 int level_index = 0;
@@ -185,6 +207,8 @@ level LEVELS[LEVEL_COUNT] = {
 level current_level;
 char *current_level_data;
 int offset = -1;
+std::vector<char> current_block;
+std::vector<char> current_walls;
 
 /* Player data */
 
@@ -374,6 +398,7 @@ void unload_level();
 
 void spawn_player();
 void move_player_horizontally(float delta);
+void move_player();
 void update_player();
 
 // ASSETS_H
