@@ -9,8 +9,10 @@
 void update_game() {
     game_frame++;
     if (game_frame % 30 == 0) {
-        player_score--;
-        if (game_frame % 120 == 0) {
+        if (player_score > 0) {
+            player_score--;
+        }
+        if (game_frame % 60 == 0) {
             move_enemy();
         }
     }
@@ -25,13 +27,12 @@ void draw_game() {
     ClearBackground(BLACK);
     draw_level();
     draw_game_overlay();
-    draw_game_overlay_hearts();
 }
 
 int main() {
-    InitWindow(1024, 480, "Platformer");
-    //InitWindow(1920, 1020, "Platformer");
-    //ToggleBorderlessWindowed();
+    //InitWindow(1024, 480, "Platformer");
+    InitWindow(1920, 1020, "Platformer");
+    ToggleBorderlessWindowed();
     SetExitKey(0);
     SetTargetFPS(60);
 

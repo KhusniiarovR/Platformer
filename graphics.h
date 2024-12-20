@@ -34,11 +34,12 @@ void derive_graphics_metrics_from_loaded_level() {
 
 void draw_menu_buttons() {
     Vector2 mouse_pos = GetMousePosition();
+    draw_text(title);
     Rectangle play_button = {screen_size.x * 0.3f, screen_size.y * 0.75f, screen_size.x * 0.4f, screen_size.y * 0.1f};
-    DrawRectangleRoundedLines(play_button, 0.5f, 10, 2, WHITE);
+    DrawRectangleRoundedLines(play_button, 0.5f, 10, 2, GREEN);
     draw_text(::play_button);
     Rectangle exit_button = {screen_size.x * 0.3f, screen_size.y * 0.87f, screen_size.x * 0.4f, screen_size.y * 0.1f};
-    DrawRectangleRoundedLines(exit_button, 0.5f, 10, 2, WHITE);
+    DrawRectangleRoundedLines(exit_button, 0.5f, 10, 2, RED);
     draw_text(::exit_button);
     {
         if (CheckCollisionPointRec(mouse_pos, play_button)) {
@@ -59,7 +60,6 @@ void draw_menu() {
     Rectangle destination = { 0, 0, screen_size.x, screen_size.y };
     DrawTexturePro(main_menu_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
     draw_menu_buttons();
-
     if (IsKeyPressed(KEY_ENTER) || (is_mouse_inside_play_button && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) )) {
         GAMESTATE = GAME_LEVEL_SELECTION;
     }
@@ -109,6 +109,12 @@ void draw_selection_menu() {
 }
 
 void draw_game_overlay() {
+    Rectangle source_rec = {0, 0, (float) heart_image.width, (float) heart_image.height};
+    Rectangle destination_rec = {static_cast<float>(screen_size.x * 0.75), 0, 60 * screen_scale, 75 * screen_scale};
+    for (int i = 0; i < player_lifes; i++) {
+        destination_rec.x += 35 * screen_scale;
+        DrawTexturePro(heart_image, source_rec, destination_rec, {0,0}, 0.0f, WHITE);
+    }
     Text score = {
         "Score " + std::to_string(player_score),
         { 0.50f, 0.05f },
@@ -153,7 +159,7 @@ void draw_level() {
                 case CONVEYOR:
                     draw_image(air_image, pos, cell_size);
                     break;
-                case FIRE_BALL:
+                case ENEMY: case ENEMY_UP:
                     draw_image(air_image, pos, cell_size);
                     break;
                 case BREAK_WALL:
@@ -194,9 +200,12 @@ void draw_level() {
                 case CONVEYOR:
                     draw_sprite(conveyor_sprite, pos, cell_size);
                     break;
-                case FIRE_BALL:
-                    draw_image(fire_ball_image, pos, cell_size);
+                case ENEMY:
+                    draw_image(enemy_image, pos, cell_size);
                     break;
+                case ENEMY_UP:
+                    draw_image(enemy_up_image, pos, cell_size);
+                break;
                 default:
                     break;
             }

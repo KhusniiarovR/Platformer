@@ -23,9 +23,10 @@ const char FALL_WALL = 'F';
 const char SLIME_JUMP = 'j';
 const char SLIME_STICKY = 'T';
 const char CONVEYOR = 'C';
-const char FIRE_BALL = 'f';
+const char ENEMY = 'Z';
+const char ENEMY_UP = 'z';
 
-const char elements[10] = {'*', 'S', 's', 'J', 'B', 'F', 'j', 'T', 'C', 'f'};
+const char elements[11] = {'*', 'S', 's', 'J', 'B', 'F', 'j', 'T', 'C', 'Z', 'z'};
 const char wall_elements[6] = {'#', 'B', 'F', 'j', 'T', 'C'};
 
 /* Levels */
@@ -39,9 +40,9 @@ struct level {
 
 char LEVEL_1_DATA[] = {
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
-    '#', ' ', ' ', ' ', 'f', ' ', ' ', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', 'f', ' ', ' ', '*', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', '@', ' ', ' ', ' ', 'S', ' ', ' ', 'E', ' ', '#',
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'
@@ -141,10 +142,20 @@ char LEVEL_8_DATA[] = {
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', 'E', '#',
 };
 
+char LEVEL_9_DATA[] {
+    '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
+    '#', ' ', ' ', ' ', 'z', ' ', ' ', ' ', '#', ' ', ' ', ' ', 'z', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 's', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', '#',
+    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+    '#', '@', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'E', '#',
+    '#', '#', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', '#', '#',
+    '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
+};
+
 level LEVEL_1 = {
     7, 11,
     LEVEL_1_DATA,
-    {'*', 'S', 'f'},
+    {'*', 'S'},
     {'#'}
 };
 
@@ -196,12 +207,19 @@ level LEVEL_8 = {
     {'#', 'B', 'j'}
 };
 
+level LEVEL_9 = {
+    7, 18,
+    LEVEL_9_DATA,
+    {'*', 's', 'Z', 'z'},
+    {'#'}
+};
+
 int level_index = 0;
-const int LEVEL_COUNT = 8;
+const int LEVEL_COUNT = 9;
 bool completed_levels[LEVEL_COUNT] = {false,false,false,false,false,false,false,false};
 
 level LEVELS[LEVEL_COUNT] = {
-    LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8
+    LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_9
 };
 
 /* Loaded Level Data */
@@ -211,7 +229,7 @@ char *current_level_data;
 int offset = -1;
 std::vector<char> current_block;
 std::vector<char> current_walls;
-std::vector<Vector3> enemy_pos;
+std::vector<Vector4> enemy_pos;
 
 /* Player data */
 
@@ -228,7 +246,7 @@ bool player_facing_right = true;
 bool sword_attack = false;
 bool player_die = false;
 
-int player_score = 100;
+int player_score = 50;
 int player_lifes = 2;
 
 /* Graphic Metrics */
@@ -274,7 +292,7 @@ Text victory_subtitle = {
 };
 
 Text play_button = {
-    "PLAY", {0.50, 0.80}, 50, WHITE
+    "PLAY", {0.50, 0.80}, 50, GREEN
 };
 
 Text exit_button = {
@@ -301,6 +319,10 @@ Text game_over2 = {
     "PRESS ENTER", {0.75f, 0.3f}, 50, BLACK
 };
 
+Text title = {
+    "GRAY WORLD", {0.50f, 0.1f}, 70, GRAY
+};
+
 /* Images and Sprites */
 
 Texture2D wall_image;
@@ -311,12 +333,14 @@ Texture2D spring_image;
 Texture2D heart_image;
 Texture2D main_menu_image;
 Texture2D game_over_image;
-Texture2D fire_ball_image;
 Texture2D sword_image;
 Texture2D break_wall_image;
 Texture2D falling_wall_image;
 Texture2D slime_jump_image;
 Texture2D slime_sticky_image;
+Texture2D enemy_image;
+Texture2D enemy_up_image;
+
 
 struct sprite {
     size_t frame_count    = 0;
@@ -424,7 +448,6 @@ void draw_image(Texture2D image, Vector2 pos, float width, float height);
 void draw_image_player(Texture2D image, Vector2 pos, float width, float height);
 void draw_image_sword(Texture2D image, Vector2 pos, float width, float height);
 void draw_image(Texture2D image, Vector2 pos, float size);
-void draw_game_overlay_hearts();
 
 sprite load_sprite(
     const std::string &file_name_prefix,

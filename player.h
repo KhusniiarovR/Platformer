@@ -71,15 +71,28 @@ void move_player() {
 
 void move_enemy() {
     for (int i = 0; i < enemy_pos.size(); i++) {
-        get_collider({enemy_pos[i].x, enemy_pos[i].y}, FIRE_BALL) = AIR;
-        if (!is_colliding({enemy_pos[i].x + enemy_pos[i].z, enemy_pos[i].y}, '#')) {
-            enemy_pos[i].x += enemy_pos[i].z;
+        if (enemy_pos[i].w == 1) {
+            get_collider({enemy_pos[i].x, enemy_pos[i].y}, ENEMY) = AIR;
+            if (!is_colliding({enemy_pos[i].x + enemy_pos[i].z, enemy_pos[i].y}, '#')) {
+                enemy_pos[i].x += enemy_pos[i].z;
+            }
+            else {
+                enemy_pos[i].z *= -1;
+                enemy_pos[i].x += enemy_pos[i].z;
+            }
+            get_collider({enemy_pos[i].x, enemy_pos[i].y}, AIR) = ENEMY;
         }
-        else {
-            enemy_pos[i].z *= -1;
-            enemy_pos[i].x += enemy_pos[i].z;
+        if (enemy_pos[i].w == 2) {
+            get_collider({enemy_pos[i].x, enemy_pos[i].y}, ENEMY_UP) = AIR;
+            if (!is_colliding({enemy_pos[i].x, enemy_pos[i].y + enemy_pos[i].z}, '#')) {
+                enemy_pos[i].y += enemy_pos[i].z;
+            }
+            else {
+                enemy_pos[i].z *= -1;
+                enemy_pos[i].y += enemy_pos[i].z;
+            }
+            get_collider({enemy_pos[i].x, enemy_pos[i].y}, AIR) = ENEMY_UP;
         }
-        get_collider({enemy_pos[i].x, enemy_pos[i].y}, AIR) = FIRE_BALL;
     }
 }
 
@@ -116,8 +129,9 @@ void update_player() {
                     player_lifes--;
                 }
             } break;
-            case FIRE_BALL: {
-                if (is_colliding_sizeable(player_pos, FIRE_BALL, 0.1f)) {
+            case ENEMY: case ENEMY_UP: {
+                if (is_colliding(player_pos, ENEMY)
+                    || is_colliding(player_pos, ENEMY_UP)) {
                     player_die = true;
                     load_level();
                     player_lifes--;
@@ -142,6 +156,7 @@ void update_player() {
                 else { JUMP_STRENGTH = 0.27f;}
                 if (is_colliding({player_pos.x + 0.1f, player_pos.y}, SLIME_STICKY)
                     || is_colliding({player_pos.x - 0.1f, player_pos.y}, SLIME_STICKY)) {
+                    player_y_velocity = 0;
                     GRAVITY_FORCE = 0.0001f;}
                 else { GRAVITY_FORCE = 0.01f;}
             } break;
@@ -173,7 +188,9 @@ void update_player() {
     if (is_colliding(player_pos, EXIT) || IsKeyPressed(KEY_EQUAL)) {
         current_block.clear();
         current_walls.clear();
-        completed_levels[offset] = true;
+        if (player_score > 0) {
+            completed_levels[offset] = true;
+        }
         PlaySound(exit_sound);
         load_level();
     }

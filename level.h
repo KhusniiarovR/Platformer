@@ -76,7 +76,7 @@ void load_level() {
         player_lifes = 2;
     }
     enemy_pos.clear();
-    player_score = 100;
+    player_score = 50;
 
     size_t rows = LEVELS[level_index].rows;
     size_t columns = LEVELS[level_index].columns;
@@ -92,8 +92,11 @@ void load_level() {
     for (int row = 0; row < rows; row++) {
         for (int column = 0; column < columns; column++) {
             current_level_data[row*columns + column] = LEVELS[level_index].data[row*columns + column];
-            if (current_level_data[row*columns + column] == FIRE_BALL) {
-                enemy_pos.push_back({(float) column, (float) row, 1.0f});
+            if (current_level_data[row*columns + column] == ENEMY) {
+                enemy_pos.push_back({(float) column, (float) row, 1.0f, 1});
+            }
+            if (current_level_data[row*columns + column] == ENEMY_UP) {
+                enemy_pos.push_back({(float) column, (float) row, 1.0f, 2});
             }
         }
     }

@@ -29,7 +29,8 @@ void load_images() {
     falling_wall_image = LoadTexture("data/images/falling_wall.png");
     slime_jump_image = LoadTexture("data/images/slime_jump.png");
     slime_sticky_image = LoadTexture("data/images/slime_sticky.png");
-    fire_ball_image = LoadTexture("data/images/fire_ball.png");
+    enemy_image = LoadTexture("data/images/enemy.png");
+    enemy_up_image = LoadTexture("data/images/enemy_up.png");
     coin_sprite   = load_sprite("data/images/coin/coin", ".png", 3, true, 18);
     player_sprite = load_sprite("data/images/player/player_move/player", ".png", 3, true, 10);
     player_idle_sprite = load_sprite("data/images/player/player_idle/player_idle", ".png", 2, true, 20);
@@ -52,7 +53,8 @@ void unload_images() {
     UnloadTexture(falling_wall_image);
     UnloadTexture(slime_jump_image);
     UnloadTexture(slime_sticky_image);
-    UnloadTexture(fire_ball_image);
+    UnloadTexture(enemy_image);
+    UnloadTexture(enemy_up_image);
     unload_sprite(player_sprite);
     unload_sprite(player_idle_sprite);
     unload_sprite(coin_sprite);
@@ -97,14 +99,6 @@ void draw_image_sword(Texture2D image, Vector2 pos, float width, float height) {
     DrawTexturePro(image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
 }
 
-void draw_game_overlay_hearts() {
-    Rectangle source_rec = {0, 0, (float) heart_image.width, (float) heart_image.height};
-    Rectangle destination_rec = {static_cast<float>(screen_size.x * 0.75), 0, 60 * screen_scale, 75 * screen_scale};
-    for (int i = 0; i < player_lifes; i++) {
-        destination_rec.x += 35 * screen_scale;
-        DrawTexturePro(heart_image, source_rec, destination_rec, {0,0}, 0.0f, WHITE);
-    }
-}
 
 sprite load_sprite(
     const std::string &file_name_prefix,
