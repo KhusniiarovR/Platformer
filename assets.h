@@ -24,13 +24,12 @@ void load_images() {
     heart_image   = LoadTexture("data/images/heart.png");
     main_menu_image = LoadTexture("data/images/main_menu.png");
     game_over_image = LoadTexture("data/images/game_over.png");
-    fire_ball_image = LoadTexture("data/images/fire_ball.png");
     sword_image = LoadTexture("data/images/sword.png");
     break_wall_image = LoadTexture("data/images/break_wall.png");
     falling_wall_image = LoadTexture("data/images/falling_wall.png");
     slime_jump_image = LoadTexture("data/images/slime_jump.png");
     slime_sticky_image = LoadTexture("data/images/slime_sticky.png");
-    ice_image = LoadTexture("data/images/ice.png");
+    fire_ball_image = LoadTexture("data/images/fire_ball.png");
     coin_sprite   = load_sprite("data/images/coin/coin", ".png", 3, true, 18);
     player_sprite = load_sprite("data/images/player/player_move/player", ".png", 3, true, 10);
     player_idle_sprite = load_sprite("data/images/player/player_idle/player_idle", ".png", 2, true, 20);
@@ -48,13 +47,12 @@ void unload_images() {
     UnloadTexture(heart_image);
     UnloadTexture(main_menu_image);
     UnloadTexture(game_over_image);
-    UnloadTexture(fire_ball_image);
     UnloadTexture(sword_image);
     UnloadTexture(break_wall_image);
     UnloadTexture(falling_wall_image);
     UnloadTexture(slime_jump_image);
     UnloadTexture(slime_sticky_image);
-    UnloadTexture(ice_image);
+    UnloadTexture(fire_ball_image);
     unload_sprite(player_sprite);
     unload_sprite(player_idle_sprite);
     unload_sprite(coin_sprite);
@@ -84,7 +82,7 @@ void draw_image_player(Texture2D image, Vector2 pos, float width, float height) 
 
 void draw_image_sword(Texture2D image, Vector2 pos, float width, float height) {
     sword_counter++;
-    Rectangle source = { 0.0f, height * -0.2f, static_cast<float>(image.width), static_cast<float>(image.height)};
+    Rectangle source = { 0.0f, static_cast<float>(image.height), static_cast<float>(image.width), static_cast<float>(image.height)};
     Rectangle destination = {pos.x, pos.y, width, height};
     float cosine = abs(cos(sword_counter / 20 + 30)) * 0.8;
     if (!player_facing_right) {
@@ -101,7 +99,7 @@ void draw_image_sword(Texture2D image, Vector2 pos, float width, float height) {
 
 void draw_game_overlay_hearts() {
     Rectangle source_rec = {0, 0, (float) heart_image.width, (float) heart_image.height};
-    Rectangle destination_rec = {static_cast<float>(screen_size.x * 0.65), 0, 50 * screen_scale, 60 * screen_scale};
+    Rectangle destination_rec = {static_cast<float>(screen_size.x * 0.75), 0, 60 * screen_scale, 75 * screen_scale};
     for (int i = 0; i < player_lifes; i++) {
         destination_rec.x += 35 * screen_scale;
         DrawTexturePro(heart_image, source_rec, destination_rec, {0,0}, 0.0f, WHITE);

@@ -77,9 +77,7 @@ void draw_selection_menu() {
     draw_text(back_button);
     if (IsKeyPressed(KEY_ENTER)) {
         GAMESTATE = GAME_PLAY;
-        offset = -1;
-        player_score = 0;
-        player_lifes = 3;
+        offset--;
         level_index = 0;
         load_level();
     }
@@ -93,16 +91,16 @@ void draw_selection_menu() {
                 return;
             }
             float unit = screen_size.x/6;
+            Color number_color = RED;
+            if (completed_levels[number-1]) { number_color = GREEN; }
             Rectangle rect = {unit * i - screen_size.x/24, 0.2f * j * screen_size.y, screen_size.x/12, screen_size.y/10};
             DrawRectangleRounded(rect, 1, 6, {0,0,0,50});
             Text level_number = {std::to_string(number), {(unit * i) / screen_size.x,
-            (screen_size.y * 0.2f * j + screen_size.y * 0.05f) / screen_size.y}, 32, GREEN};
+            (screen_size.y * 0.2f * j + screen_size.y * 0.05f) / screen_size.y}, 32, number_color};
             draw_text(level_number);
             if (CheckCollisionPointRec(mouse_pos, rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                 GAMESTATE = GAME_PLAY;
                 offset = number - 2;
-                player_score = 0;
-                player_lifes = 3;
                 level_index = 0;
                 load_level();
             }
@@ -154,7 +152,10 @@ void draw_level() {
                     break;
                 case CONVEYOR:
                     draw_image(air_image, pos, cell_size);
-                break;
+                    break;
+                case FIRE_BALL:
+                    draw_image(air_image, pos, cell_size);
+                    break;
                 case BREAK_WALL:
                     draw_image(break_wall_image, pos, cell_size);
                     break;
@@ -192,6 +193,9 @@ void draw_level() {
                     break;
                 case CONVEYOR:
                     draw_sprite(conveyor_sprite, pos, cell_size);
+                    break;
+                case FIRE_BALL:
+                    draw_image(fire_ball_image, pos, cell_size);
                     break;
                 default:
                     break;
@@ -281,6 +285,9 @@ void draw_victory_menu() {
     draw_text(victory_title);
     draw_text(victory_subtitle);
     if (IsKeyPressed(KEY_ENTER)) {
+        for (int i = 0; i < LEVEL_COUNT; i++) {
+            completed_levels[i] = false;
+        }
         GAMESTATE = GAME_MENU;
     }
 }
@@ -305,8 +312,6 @@ void draw_game_over() {
     if (IsKeyPressed(KEY_Z) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, play_again_button)) {
         GAMESTATE = GAME_PLAY;
         offset--;
-        player_lifes = 3;
-        player_score = 0;
         load_level();
     }
 }

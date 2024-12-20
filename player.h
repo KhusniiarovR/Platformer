@@ -69,6 +69,20 @@ void move_player() {
     }
 }
 
+void move_enemy() {
+    for (int i = 0; i < enemy_pos.size(); i++) {
+        get_collider({enemy_pos[i].x, enemy_pos[i].y}, FIRE_BALL) = AIR;
+        if (!is_colliding({enemy_pos[i].x + enemy_pos[i].z, enemy_pos[i].y}, '#')) {
+            enemy_pos[i].x += enemy_pos[i].z;
+        }
+        else {
+            enemy_pos[i].z *= -1;
+            enemy_pos[i].x += enemy_pos[i].z;
+        }
+        get_collider({enemy_pos[i].x, enemy_pos[i].y}, AIR) = FIRE_BALL;
+    }
+}
+
 void update_player() {
     player_pos.y += player_y_velocity;
     player_y_velocity += GRAVITY_FORCE;
@@ -90,12 +104,20 @@ void update_player() {
             case COIN: {
                 if (is_colliding(player_pos, COIN)) {
                     get_collider(player_pos, COIN) = ' ';
-                    player_score+=10;
+                    player_score += 15;
                     PlaySound(coin_sound);
                 }
             } break;
             case SPIKE: case SPIKE_UP: {
-                if (is_colliding_sizeable(player_pos, SPIKE, 0.1f) || is_colliding_sizeable(player_pos, SPIKE_UP, 0.1f)) {
+                if (   is_colliding_sizeable(player_pos, SPIKE, 0.1f)
+                    || is_colliding_sizeable(player_pos, SPIKE_UP, 0.1f)) {
+                    player_die = true;
+                    load_level();
+                    player_lifes--;
+                }
+            } break;
+            case FIRE_BALL: {
+                if (is_colliding_sizeable(player_pos, FIRE_BALL, 0.1f)) {
                     player_die = true;
                     load_level();
                     player_lifes--;
@@ -103,7 +125,7 @@ void update_player() {
             } break;
             case CONVEYOR: {
                 if (is_colliding({player_pos.x, player_pos.y + 0.1f}, CONVEYOR)) {
-                    move_player_horizontally(-MOVEMENT_SPEED * 0.1f);
+                    move_player_horizontally(-MOVEMENT_SPEED * 0.3f);
                 }
             } break;
             case SLIME_JUMP: {
@@ -148,9 +170,10 @@ void update_player() {
             default: break;
         }
     }
-    if (is_colliding(player_pos, EXIT)) {
+    if (is_colliding(player_pos, EXIT) || IsKeyPressed(KEY_EQUAL)) {
         current_block.clear();
         current_walls.clear();
+        completed_levels[offset] = true;
         PlaySound(exit_sound);
         load_level();
     }

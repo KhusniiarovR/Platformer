@@ -8,6 +8,12 @@
 
 void update_game() {
     game_frame++;
+    if (game_frame % 30 == 0) {
+        player_score--;
+        if (game_frame % 120 == 0) {
+            move_enemy();
+        }
+    }
     if (player_lifes == 0) {
         GAMESTATE = GAME_OVER;
     }
@@ -23,9 +29,9 @@ void draw_game() {
 }
 
 int main() {
-    //InitWindow(1024, 480, "Platformer");
-    InitWindow(1920, 1020, "Platformer");
-    ToggleBorderlessWindowed();
+    InitWindow(1024, 480, "Platformer");
+    //InitWindow(1920, 1020, "Platformer");
+    //ToggleBorderlessWindowed();
     SetExitKey(0);
     SetTargetFPS(60);
 
@@ -58,7 +64,6 @@ int main() {
                 break;
             }
             case GAME_END: {
-                //TODO массив уровней бул для проверки и PlaySound(win_sound);
                 draw_victory_menu();
                 break;
             }

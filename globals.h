@@ -17,16 +17,16 @@ const char COIN   = '*';
 const char EXIT   = 'E';
 const char SPIKE  = 'S';
 const char SPIKE_UP = 's';
-const char SPRING = 'J'; //jump
+const char SPRING = 'J';
 const char BREAK_WALL = 'B';
 const char FALL_WALL = 'F';
 const char SLIME_JUMP = 'j';
 const char SLIME_STICKY = 'T';
-const char ICE = 'I';
 const char CONVEYOR = 'C';
+const char FIRE_BALL = 'f';
 
-const char elements[10] = {'*', 'S', 's', 'J', 'B', 'F', 'j', 'T', 'I', 'C'};
-const char wall_elements[7] = {'#', 'B', 'F', 'j', 'T', 'I', 'C'};
+const char elements[10] = {'*', 'S', 's', 'J', 'B', 'F', 'j', 'T', 'C', 'f'};
+const char wall_elements[6] = {'#', 'B', 'F', 'j', 'T', 'C'};
 
 /* Levels */
 
@@ -39,9 +39,9 @@ struct level {
 
 char LEVEL_1_DATA[] = {
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
+    '#', ' ', ' ', ' ', 'f', ' ', ' ', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-    '#', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', '#',
+    '#', ' ', 'f', ' ', ' ', '*', ' ', ' ', ' ', ' ', '#',
     '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
     '#', '@', ' ', ' ', ' ', 'S', ' ', ' ', 'E', ' ', '#',
     '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'
@@ -98,7 +98,7 @@ char LEVEL_5_DATA[] = {
     '#', ' ', '#', '#', ' ', ' ', '#',
     '#', ' ', ' ', '#', ' ', ' ', '#',
     '#', '#', ' ', '#', ' ', ' ', '#',
-    '#', '@', ' ', '#', 'S', 'E', '#',
+    '#', '@', ' ', '#', 'S', ' ', 'E',
     '#', '#', '#', '#', '#', '#', '#',
 };
 
@@ -144,7 +144,7 @@ char LEVEL_8_DATA[] = {
 level LEVEL_1 = {
     7, 11,
     LEVEL_1_DATA,
-    {'*', 'S'},
+    {'*', 'S', 'f'},
     {'#'}
 };
 
@@ -198,6 +198,7 @@ level LEVEL_8 = {
 
 int level_index = 0;
 const int LEVEL_COUNT = 8;
+bool completed_levels[LEVEL_COUNT] = {false,false,false,false,false,false,false,false};
 
 level LEVELS[LEVEL_COUNT] = {
     LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8
@@ -210,6 +211,7 @@ char *current_level_data;
 int offset = -1;
 std::vector<char> current_block;
 std::vector<char> current_walls;
+std::vector<Vector3> enemy_pos;
 
 /* Player data */
 
@@ -226,8 +228,8 @@ bool player_facing_right = true;
 bool sword_attack = false;
 bool player_die = false;
 
-int player_score = 0;
-int player_lifes = 3;
+int player_score = 100;
+int player_lifes = 2;
 
 /* Graphic Metrics */
 
@@ -292,11 +294,11 @@ Text play_again_button = {
 };
 
 Text game_over1 = {
-    "YOU LOSE", {0.70f, 0.2f}, 50, BLACK
+    "YOU LOSE", {0.73f, 0.2f}, 50, BLACK
 };
 
 Text game_over2 = {
-    "PRESS ENTER", {0.73f, 0.3f}, 50, BLACK
+    "PRESS ENTER", {0.75f, 0.3f}, 50, BLACK
 };
 
 /* Images and Sprites */
@@ -315,7 +317,6 @@ Texture2D break_wall_image;
 Texture2D falling_wall_image;
 Texture2D slime_jump_image;
 Texture2D slime_sticky_image;
-Texture2D ice_image;
 
 struct sprite {
     size_t frame_count    = 0;
@@ -409,6 +410,7 @@ void spawn_player();
 void move_player_horizontally(float delta);
 void move_player();
 void update_player();
+void move_enemy();
 
 // ASSETS_H
 

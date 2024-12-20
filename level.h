@@ -55,13 +55,29 @@ void load_level() {
     if (!player_die) {
         offset++;
         level_index = offset;
-
-        if (level_index >= LEVEL_COUNT) {
+        bool complete;
+        for (int i = 0; i < LEVEL_COUNT; i++) {
+            if (completed_levels[i] == false) {
+                complete = false;
+                break;
+            }
+            complete = true;
+        }
+        if (level_index >= LEVEL_COUNT && !complete) {
+            GAMESTATE = GAME_LEVEL_SELECTION;
+            return;
+        }
+        if (complete) {
             create_victory_menu_background();
+            PlaySound(win_sound);
             GAMESTATE = GAME_END;
             return;
         }
+        player_lifes = 2;
     }
+    enemy_pos.clear();
+    player_score = 100;
+
     size_t rows = LEVELS[level_index].rows;
     size_t columns = LEVELS[level_index].columns;
     current_level_data = new char[rows*columns];
@@ -76,9 +92,11 @@ void load_level() {
     for (int row = 0; row < rows; row++) {
         for (int column = 0; column < columns; column++) {
             current_level_data[row*columns + column] = LEVELS[level_index].data[row*columns + column];
+            if (current_level_data[row*columns + column] == FIRE_BALL) {
+                enemy_pos.push_back({(float) column, (float) row, 1.0f});
+            }
         }
     }
-
     current_level = {rows, columns, current_level_data};
     player_die = false;
     spawn_player();
