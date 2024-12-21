@@ -55,13 +55,12 @@ void load_level() {
     if (!player_die) {
         offset++;
         level_index = offset;
-        bool complete;
+        bool complete = true;
         for (int i = 0; i < LEVEL_COUNT; i++) {
             if (completed_levels[i] == false) {
                 complete = false;
                 break;
             }
-            complete = true;
         }
         if (level_index >= LEVEL_COUNT && !complete) {
             GAMESTATE = GAME_LEVEL_SELECTION;
@@ -74,20 +73,21 @@ void load_level() {
             return;
         }
         player_lifes = 2;
+        current_block.clear();
+        current_walls.clear();
+        for (int i = 0; i < LEVELS[level_index].blocks.size(); i++) {
+            current_block.push_back(LEVELS[level_index].blocks[i]);
+        }
+        for (size_t i = 0; i < LEVELS[level_index].wall_blocks.size(); i++) {
+            current_walls.push_back(LEVELS[level_index].wall_blocks[i]);
+        }
     }
-    enemy_pos.clear();
-    player_score = 50;
+    unload_level();
+    player_time = 30;
 
     size_t rows = LEVELS[level_index].rows;
     size_t columns = LEVELS[level_index].columns;
     current_level_data = new char[rows*columns];
-
-    for (int i = 0; i < LEVELS[level_index].blocks.size(); i++) {
-        current_block.push_back(LEVELS[level_index].blocks[i]);
-    }
-    for (size_t i = 0; i < LEVELS[level_index].wall_blocks.size(); i++) {
-        current_walls.push_back(LEVELS[level_index].wall_blocks[i]);
-    }
 
     for (int row = 0; row < rows; row++) {
         for (int column = 0; column < columns; column++) {
@@ -108,6 +108,7 @@ void load_level() {
 
 void unload_level() {
     delete[] current_level_data;
+    enemy_pos.clear();
 }
 
 #endif // LEVEL_H

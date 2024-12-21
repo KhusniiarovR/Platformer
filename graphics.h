@@ -35,10 +35,10 @@ void derive_graphics_metrics_from_loaded_level() {
 void draw_menu_buttons() {
     Vector2 mouse_pos = GetMousePosition();
     draw_text(title);
-    Rectangle play_button = {screen_size.x * 0.3f, screen_size.y * 0.75f, screen_size.x * 0.4f, screen_size.y * 0.1f};
+    Rectangle play_button = {screen_size.x * 0.4f, screen_size.y * 0.75f, screen_size.x * 0.4f, screen_size.y * 0.1f};
     DrawRectangleRoundedLines(play_button, 0.5f, 10, 2, GREEN);
     draw_text(::play_button);
-    Rectangle exit_button = {screen_size.x * 0.3f, screen_size.y * 0.87f, screen_size.x * 0.4f, screen_size.y * 0.1f};
+    Rectangle exit_button = {screen_size.x * 0.4f, screen_size.y * 0.87f, screen_size.x * 0.4f, screen_size.y * 0.1f};
     DrawRectangleRoundedLines(exit_button, 0.5f, 10, 2, RED);
     draw_text(::exit_button);
     {
@@ -56,9 +56,9 @@ void draw_menu_buttons() {
 
 void draw_menu() {
     ClearBackground(BLACK);
-    Rectangle source = { 0.0f, 0.0f, static_cast<float>(main_menu_image.width), static_cast<float>(main_menu_image.height) };
+    Rectangle source = { 0.0f, 0.0f, static_cast<float>(menu_image.width), static_cast<float>(menu_image.height) };
     Rectangle destination = { 0, 0, screen_size.x, screen_size.y };
-    DrawTexturePro(main_menu_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
+    DrawTexturePro(menu_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
     draw_menu_buttons();
     if (IsKeyPressed(KEY_ENTER) || (is_mouse_inside_play_button && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) )) {
         GAMESTATE = GAME_LEVEL_SELECTION;
@@ -67,9 +67,9 @@ void draw_menu() {
 
 void draw_selection_menu() {
     ClearBackground(BLACK);
-    Rectangle source = { 0.0f, 0.0f, static_cast<float>(main_menu_image.width), static_cast<float>(main_menu_image.height) };
+    Rectangle source = { 0.0f, 0.0f, static_cast<float>(menu_image.width), static_cast<float>(menu_image.height) };
     Rectangle destination = { 0, 0, screen_size.x, screen_size.y };
-    DrawTexturePro(main_menu_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
+    DrawTexturePro(menu_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
     Vector2 mouse_pos = GetMousePosition();
     Rectangle back_button_rec = {0.005f * screen_size.x, 0.01f * screen_size.y,
                              screen_size.x * 0.2f, screen_size.y * 0.13f};
@@ -94,7 +94,7 @@ void draw_selection_menu() {
             Color number_color = RED;
             if (completed_levels[number-1]) { number_color = GREEN; }
             Rectangle rect = {unit * i - screen_size.x/24, 0.2f * j * screen_size.y, screen_size.x/12, screen_size.y/10};
-            DrawRectangleRounded(rect, 1, 6, {0,0,0,50});
+            DrawRectangleRounded(rect, 1, 6, {0,0,0,90});
             Text level_number = {std::to_string(number), {(unit * i) / screen_size.x,
             (screen_size.y * 0.2f * j + screen_size.y * 0.05f) / screen_size.y}, 32, number_color};
             draw_text(level_number);
@@ -115,20 +115,28 @@ void draw_game_overlay() {
         destination_rec.x += 35 * screen_scale;
         DrawTexturePro(heart_image, source_rec, destination_rec, {0,0}, 0.0f, WHITE);
     }
-    Text score = {
-        "Score " + std::to_string(player_score),
+    Text time = {
+        "Time " + std::to_string(player_time),
         { 0.50f, 0.05f },
         48.0f
     };
-    Text score_shadow = {
-        "Score " + std::to_string(player_score),
+    Text time_shadow = {
+        "Time " + std::to_string(player_time),
         { 0.503f, 0.055f },
         48.0f,
         GRAY
     };
+    Color current_level_number_color = RED;
+    if (completed_levels[level_index]) { current_level_number_color = GREEN; }
+    Text current_level_number = {
+        std::to_string(level_index + 1),
+        { 0.15f, 0.07f },
+        70.0f, current_level_number_color
+    };
 
-    draw_text(score_shadow);
-    draw_text(score);
+    draw_text(time_shadow);
+    draw_text(time);
+    draw_text(current_level_number);
 }
 
 void draw_level() {
@@ -315,10 +323,10 @@ void draw_game_over() {
     draw_text(::play_again_button);
     draw_text(game_over1);
     draw_text(game_over2);
-    if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, exit_button)) {
+    if (IsKeyPressed(KEY_ESCAPE) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, exit_button)) {
         GAMESTATE = GAME_MENU;
     }
-    if (IsKeyPressed(KEY_Z) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, play_again_button)) {
+    if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, play_again_button)) {
         GAMESTATE = GAME_PLAY;
         offset--;
         load_level();

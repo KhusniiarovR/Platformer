@@ -65,7 +65,10 @@ void move_player() {
     }
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyDown(KEY_SPACE)) {
-        sword_attack = true;
+        if (!IsSoundPlaying(sword_sound)) {
+            sword_attack = true;
+            PlaySound(sword_sound);
+        }
     }
 }
 
@@ -117,7 +120,7 @@ void update_player() {
             case COIN: {
                 if (is_colliding(player_pos, COIN)) {
                     get_collider(player_pos, COIN) = ' ';
-                    player_score += 15;
+                    player_time += 10;
                     PlaySound(coin_sound);
                 }
             } break;
@@ -125,6 +128,7 @@ void update_player() {
                 if (   is_colliding_sizeable(player_pos, SPIKE, 0.1f)
                     || is_colliding_sizeable(player_pos, SPIKE_UP, 0.1f)) {
                     player_die = true;
+                    PlaySound(death_sound);
                     load_level();
                     player_lifes--;
                 }
@@ -133,6 +137,7 @@ void update_player() {
                 if (is_colliding(player_pos, ENEMY)
                     || is_colliding(player_pos, ENEMY_UP)) {
                     player_die = true;
+                    PlaySound(death_sound);
                     load_level();
                     player_lifes--;
                 }
@@ -144,35 +149,27 @@ void update_player() {
             } break;
             case SLIME_JUMP: {
                 if (is_colliding({player_pos.x, player_pos.y + 0.1f}, SLIME_JUMP)) {
-                    MOVEMENT_SPEED = 0.03f;
-                }
-                else {
-                    MOVEMENT_SPEED = 0.1f;
-                }
+                    MOVEMENT_SPEED = 0.03f; }
+                else { MOVEMENT_SPEED = 0.1f; }
             } break;
             case SLIME_STICKY: {
                 if (is_colliding({player_pos.x, player_pos.y + 0.1f}, SLIME_STICKY)) {
-                    JUMP_STRENGTH = 0.19f;}
-                else { JUMP_STRENGTH = 0.27f;}
+                    JUMP_STRENGTH = 0.19f; }
+                else { JUMP_STRENGTH = 0.27f; }
                 if (is_colliding({player_pos.x + 0.1f, player_pos.y}, SLIME_STICKY)
                     || is_colliding({player_pos.x - 0.1f, player_pos.y}, SLIME_STICKY)) {
-                    player_y_velocity = 0;
-                    GRAVITY_FORCE = 0.0001f;}
-                else { GRAVITY_FORCE = 0.01f;}
+                    player_y_velocity = 0.03f; }
             } break;
             case FALL_WALL: {
                 if (is_colliding({player_pos.x, player_pos.y + 0.1f}, FALL_WALL)) {
-                    destroy_fall_wall({player_pos.x, player_pos.y + 0.1f});
-                }
+                    destroy_fall_wall({player_pos.x, player_pos.y + 0.1f}); }
             } break;
             case BREAK_WALL: {
                 if (sword_attack) {
                     if (is_colliding({player_pos.x + 1, player_pos.y}, BREAK_WALL) && player_facing_right) {
-                        get_collider({player_pos.x + 1, player_pos.y}, BREAK_WALL) = '*';
-                    }
+                        get_collider({player_pos.x + 1, player_pos.y}, BREAK_WALL) = '*'; }
                     if (is_colliding({player_pos.x - 1, player_pos.y}, BREAK_WALL) && !player_facing_right) {
-                        get_collider({player_pos.x - 1, player_pos.y}, BREAK_WALL) = '*';
-                    }
+                        get_collider({player_pos.x - 1, player_pos.y}, BREAK_WALL) = '*'; }
                 }
             } break;
             case SPRING: {
@@ -186,9 +183,7 @@ void update_player() {
         }
     }
     if (is_colliding(player_pos, EXIT) || IsKeyPressed(KEY_EQUAL)) {
-        current_block.clear();
-        current_walls.clear();
-        if (player_score > 0) {
+        if (player_time > 0) {
             completed_levels[offset] = true;
         }
         PlaySound(exit_sound);

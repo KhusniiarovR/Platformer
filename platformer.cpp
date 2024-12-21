@@ -8,13 +8,11 @@
 
 void update_game() {
     game_frame++;
-    if (game_frame % 30 == 0) {
-        if (player_score > 0) {
-            player_score--;
+    if (game_frame % 60 == 0) {
+        if (player_time > 0) {
+            player_time--;
         }
-        if (game_frame % 60 == 0) {
-            move_enemy();
-        }
+        move_enemy();
     }
     if (player_lifes == 0) {
         GAMESTATE = GAME_OVER;

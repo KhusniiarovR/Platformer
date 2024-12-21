@@ -22,7 +22,7 @@ void load_images() {
     spike_up_image = LoadTexture("data/images/spike_up.png");
     spring_image  = LoadTexture("data/images/spring_idle.png");
     heart_image   = LoadTexture("data/images/heart.png");
-    main_menu_image = LoadTexture("data/images/main_menu.png");
+    menu_image = LoadTexture("data/images/menu.png");
     game_over_image = LoadTexture("data/images/game_over.png");
     sword_image = LoadTexture("data/images/sword.png");
     break_wall_image = LoadTexture("data/images/break_wall.png");
@@ -46,7 +46,7 @@ void unload_images() {
     UnloadTexture(spike_up_image);
     UnloadTexture(spring_image);
     UnloadTexture(heart_image);
-    UnloadTexture(main_menu_image);
+    UnloadTexture(menu_image);
     UnloadTexture(game_over_image);
     UnloadTexture(sword_image);
     UnloadTexture(break_wall_image);
@@ -195,6 +195,8 @@ void load_sounds() {
     exit_sound = LoadSound("data/sounds/exit.wav");
     main_menu_music = LoadSound("data/sounds/music_main.mp3");
     win_sound = LoadSound("data/sounds/win.mp3");
+    sword_sound = LoadSound("data/sounds/sword.mp3");
+    death_sound = LoadSound("data/sounds/death.mp3");
 }
 
 void unload_sounds() {
@@ -202,6 +204,8 @@ void unload_sounds() {
     UnloadSound(exit_sound);
     UnloadSound(main_menu_music);
     UnloadSound(win_sound);
+    UnloadSound(sword_sound);
+    UnloadSound(death_sound);
 }
 
 #endif // IMAGES_H
