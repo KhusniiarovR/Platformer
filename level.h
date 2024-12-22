@@ -84,6 +84,7 @@ void load_level() {
     }
     unload_level();
     player_time = 30;
+    is_player_has_sword = false;
 
     size_t rows = LEVELS[level_index].rows;
     size_t columns = LEVELS[level_index].columns;

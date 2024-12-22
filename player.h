@@ -65,7 +65,7 @@ void move_player() {
     }
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsKeyDown(KEY_SPACE)) {
-        if (!IsSoundPlaying(sword_sound)) {
+        if (!IsSoundPlaying(sword_sound) && is_player_has_sword) {
             sword_attack = true;
             PlaySound(sword_sound);
         }
@@ -87,13 +87,15 @@ void move_enemy() {
         }
         if (enemy_pos[i].w == 2) {
             get_collider({enemy_pos[i].x, enemy_pos[i].y}, ENEMY_UP) = AIR;
-            if (!is_colliding({enemy_pos[i].x, enemy_pos[i].y + enemy_pos[i].z}, '#')) {
+            if (!is_colliding({enemy_pos[i].x, enemy_pos[i].y + enemy_pos[i].z}, '#')
+                && !is_colliding({enemy_pos[i].x, enemy_pos[i].y + enemy_pos[i].z}, 'F')) {
                 enemy_pos[i].y += enemy_pos[i].z;
             }
             else {
                 enemy_pos[i].z *= -1;
                 enemy_pos[i].y += enemy_pos[i].z;
             }
+
             get_collider({enemy_pos[i].x, enemy_pos[i].y}, AIR) = ENEMY_UP;
         }
     }
@@ -141,12 +143,57 @@ void update_player() {
                     load_level();
                     player_lifes--;
                 }
+                if (sword_attack) {
+                    if (is_colliding({player_pos.x + 1, player_pos.y}, ENEMY) && player_facing_right) {
+                        for (int i = 0; i < enemy_pos.size(); i++) {
+                            if (abs(enemy_pos[i].x - player_pos.x) < 2 && abs(enemy_pos[i].y - player_pos.y) < 1.5) {
+                                get_collider({player_pos.x + 1, player_pos.y}, ENEMY) = '*';
+                                PlaySound(enemy_death_sound);
+                                enemy_pos.erase(enemy_pos.begin() + i);
+                            }
+                        }
+                    }
+                    else if (is_colliding({player_pos.x - 1, player_pos.y}, ENEMY) && !player_facing_right) {
+                        for (int i = 0; i < enemy_pos.size(); i++) {
+                            if (abs(player_pos.x - enemy_pos[i].x) < 2 && abs(enemy_pos[i].y - player_pos.y) < 1.5) {
+                                get_collider({player_pos.x - 1, player_pos.y}, ENEMY) = '*';
+                                PlaySound(enemy_death_sound);
+                                enemy_pos.erase(enemy_pos.begin() + i);
+                            }
+                        }
+                    }
+                    if (is_colliding({player_pos.x + 1, player_pos.y}, ENEMY_UP) && player_facing_right) {
+                        for (int i = 0; i < enemy_pos.size(); i++) {
+                            if (abs(enemy_pos[i].x - player_pos.x) < 2 && abs(enemy_pos[i].y - player_pos.y) < 1.5) {
+                                get_collider({player_pos.x + 1, player_pos.y}, ENEMY_UP) = '*';
+                                PlaySound(enemy_death_sound);
+                                enemy_pos.erase(enemy_pos.begin() + i);
+                            }
+                        }
+                    }
+                    else if (is_colliding({player_pos.x - 1, player_pos.y}, ENEMY_UP) && !player_facing_right) {
+                        for (int i = 0; i < enemy_pos.size(); i++) {
+                            if (abs(enemy_pos[i].x - player_pos.x) < 2 && abs(enemy_pos[i].y - player_pos.y) < 1.5) {
+                                get_collider({player_pos.x - 1, player_pos.y}, ENEMY_UP) = '*';
+                                PlaySound(enemy_death_sound);
+                                enemy_pos.erase(enemy_pos.begin() + i);
+                            }
+                        }
+                    }
+                }
             } break;
             case CONVEYOR: {
                 if (is_colliding({player_pos.x, player_pos.y + 0.1f}, CONVEYOR)) {
                     move_player_horizontally(-MOVEMENT_SPEED * 0.3f);
                 }
             } break;
+            case SWORD: {
+                if (is_colliding({player_pos.x, player_pos.y}, SWORD)) {
+                    get_collider(player_pos, SWORD) = ' ';
+                    is_player_has_sword = true;
+                    PlaySound(sword_pick_up_sound);
+                }
+            }
             case SLIME_JUMP: {
                 if (is_colliding({player_pos.x, player_pos.y + 0.1f}, SLIME_JUMP)) {
                     MOVEMENT_SPEED = 0.03f; }
@@ -168,7 +215,7 @@ void update_player() {
                 if (sword_attack) {
                     if (is_colliding({player_pos.x + 1, player_pos.y}, BREAK_WALL) && player_facing_right) {
                         get_collider({player_pos.x + 1, player_pos.y}, BREAK_WALL) = '*'; }
-                    if (is_colliding({player_pos.x - 1, player_pos.y}, BREAK_WALL) && !player_facing_right) {
+                    else if (is_colliding({player_pos.x - 1, player_pos.y}, BREAK_WALL) && !player_facing_right) {
                         get_collider({player_pos.x - 1, player_pos.y}, BREAK_WALL) = '*'; }
                 }
             } break;
@@ -176,6 +223,7 @@ void update_player() {
                 if (is_colliding(player_pos, SPRING)) {
                     player_y_velocity = -JUMP_STRENGTH * 1.6;
                     spring_sprite.loop = true;
+                    PlaySound(spring_sound);
                 }
                 else { spring_sprite.loop = false; }
             } break;

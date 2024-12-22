@@ -109,12 +109,20 @@ void draw_selection_menu() {
 }
 
 void draw_game_overlay() {
-    Rectangle source_rec = {0, 0, (float) heart_image.width, (float) heart_image.height};
-    Rectangle destination_rec = {static_cast<float>(screen_size.x * 0.75), 0, 60 * screen_scale, 75 * screen_scale};
+    Rectangle source_rec_heart = {0, 0, (float) heart_image.width, (float) heart_image.height};
+    Rectangle destination_rec_heart = {screen_size.x * 0.75f, 0, 60 * screen_scale, 75 * screen_scale};
     for (int i = 0; i < player_lifes; i++) {
-        destination_rec.x += 35 * screen_scale;
-        DrawTexturePro(heart_image, source_rec, destination_rec, {0,0}, 0.0f, WHITE);
+        destination_rec_heart.x += 35 * screen_scale;
+        DrawTexturePro(heart_image, source_rec_heart, destination_rec_heart, {0,0}, 0.0f, WHITE);
     }
+
+    Rectangle source_rec_sword_icon = {0, 0, (float) sword_icon_image.width, (float) sword_icon_image.height};
+    Rectangle destination_rec_sword_icon = {screen_size.x * 0.05f, screen_size.y * 0.87f, 80 * screen_scale, 80 * screen_scale};
+    Color sword_icon_color = WHITE;
+    if (!is_player_has_sword) {sword_icon_color = BLACK;}
+    DrawRectangle(destination_rec_sword_icon.x, destination_rec_sword_icon.y, destination_rec_sword_icon.width, destination_rec_sword_icon.height, {200,200,200,130});
+    DrawTexturePro(sword_icon_image, source_rec_sword_icon, destination_rec_sword_icon, {0,0}, 0.0f, sword_icon_color);
+
     Text time = {
         "Time " + std::to_string(player_time),
         { 0.50f, 0.05f },
@@ -130,7 +138,7 @@ void draw_game_overlay() {
     if (completed_levels[level_index]) { current_level_number_color = GREEN; }
     Text current_level_number = {
         std::to_string(level_index + 1),
-        { 0.15f, 0.07f },
+        { 0.10f, 0.07f },
         70.0f, current_level_number_color
     };
 
@@ -155,21 +163,15 @@ void draw_level() {
                 case PLAYER:
                 case COIN:
                 case EXIT:
-                case SPIKE:
+                case SPIKE: case SPIKE_UP: case SPRING: case CONVEYOR: case SWORD:
                     draw_image(air_image, pos, cell_size);
                     break;
-                case SPIKE_UP:
-                    draw_image(air_image, pos, cell_size);
+                case ENEMY:
+                    draw_image(enemy_image, pos, cell_size);
                     break;
-                case SPRING:
-                    draw_image(air_image, pos, cell_size);
-                    break;
-                case CONVEYOR:
-                    draw_image(air_image, pos, cell_size);
-                    break;
-                case ENEMY: case ENEMY_UP:
-                    draw_image(air_image, pos, cell_size);
-                    break;
+                case ENEMY_UP:
+                    draw_image(enemy_up_image, pos, cell_size);
+                break;
                 case BREAK_WALL:
                     draw_image(break_wall_image, pos, cell_size);
                     break;
@@ -190,17 +192,14 @@ void draw_level() {
             }
             // The second image layer
             switch (cell) {
-                case COIN:
-                    draw_sprite(coin_sprite, pos, cell_size);
-                    break;
-                case EXIT:
-                    draw_sprite(exit_sprite, pos, cell_size);
-                    break;
                 case SPIKE:
                     draw_image(spike_image, pos, cell_size);
                     break;
                 case SPIKE_UP:
                     draw_image(spike_up_image, pos, cell_size);
+                    break;
+                case SWORD:
+                    draw_image(sword_icon_image, pos, cell_size);
                     break;
                 case SPRING:
                     draw_sprite(spring_sprite, pos, cell_size);
@@ -208,12 +207,12 @@ void draw_level() {
                 case CONVEYOR:
                     draw_sprite(conveyor_sprite, pos, cell_size);
                     break;
-                case ENEMY:
-                    draw_image(enemy_image, pos, cell_size);
+                case COIN:
+                    draw_sprite(coin_sprite, pos, cell_size);
                     break;
-                case ENEMY_UP:
-                    draw_image(enemy_up_image, pos, cell_size);
-                break;
+                case EXIT:
+                    draw_sprite(exit_sprite, pos, cell_size);
+                    break;
                 default:
                     break;
             }

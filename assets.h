@@ -31,6 +31,7 @@ void load_images() {
     slime_sticky_image = LoadTexture("data/images/slime_sticky.png");
     enemy_image = LoadTexture("data/images/enemy.png");
     enemy_up_image = LoadTexture("data/images/enemy_up.png");
+    sword_icon_image = LoadTexture("data/images/sword_icon.png");
     coin_sprite   = load_sprite("data/images/coin/coin", ".png", 3, true, 18);
     player_sprite = load_sprite("data/images/player/player_move/player", ".png", 3, true, 10);
     player_idle_sprite = load_sprite("data/images/player/player_idle/player_idle", ".png", 2, true, 20);
@@ -55,6 +56,7 @@ void unload_images() {
     UnloadTexture(slime_sticky_image);
     UnloadTexture(enemy_image);
     UnloadTexture(enemy_up_image);
+    UnloadTexture(sword_icon_image);
     unload_sprite(player_sprite);
     unload_sprite(player_idle_sprite);
     unload_sprite(coin_sprite);
@@ -193,10 +195,13 @@ void load_sounds() {
     InitAudioDevice();
     coin_sound = LoadSound("data/sounds/coin.wav");
     exit_sound = LoadSound("data/sounds/exit.wav");
-    main_menu_music = LoadSound("data/sounds/music_main.mp3");
+    main_menu_music = LoadSound("data/music/music_main.mp3");
     win_sound = LoadSound("data/sounds/win.mp3");
     sword_sound = LoadSound("data/sounds/sword.mp3");
     death_sound = LoadSound("data/sounds/death.mp3");
+    spring_sound = LoadSound("data/sounds/spring.mp3");
+    sword_pick_up_sound = LoadSound("data/sounds/sword_pick_up.mp3");
+    enemy_death_sound = LoadSound("data/sounds/enemy_death.mp3");
 }
 
 void unload_sounds() {
@@ -206,6 +211,9 @@ void unload_sounds() {
     UnloadSound(win_sound);
     UnloadSound(sword_sound);
     UnloadSound(death_sound);
+    UnloadSound(spring_sound);
+    UnloadSound(sword_pick_up_sound);
+    UnloadSound(enemy_death_sound);
 }
 
 #endif // IMAGES_H
