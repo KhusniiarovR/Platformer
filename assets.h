@@ -175,45 +175,38 @@ void draw_player_anim(Vector2 pos, float width, float height) {
 
 void draw_sprite(sprite &sprite, Vector2 pos, float width, float height) {
     draw_image(sprite.frames[sprite.frame_index], pos, width, height);
-    if (sprite.prev_game_frame == game_frame) {
-        return;
-    }
-    if (sprite.frames_skipped < sprite.frames_to_skip) {
-        ++sprite.frames_skipped;
-    } else {
-        sprite.frames_skipped = 0;
-
-        ++sprite.frame_index;
-        if (sprite.frame_index >= sprite.frame_count) {
-            sprite.frame_index = sprite.loop ? 0 : sprite.frame_count - 1;
-        }
-    }
-    sprite.prev_game_frame = game_frame;
+    anim_calc(sprite);
 }
 
 void load_sounds() {
     InitAudioDevice();
+    SetMasterVolume(0.15f);
     coin_sound = LoadSound("data/sounds/coin.wav");
     exit_sound = LoadSound("data/sounds/exit.wav");
-    main_menu_music = LoadSound("data/music/music_main.mp3");
+    main_music = LoadSound("data/music/music_main.mp3");
+    SetSoundVolume(main_music, 0.13f);
     win_sound = LoadSound("data/sounds/win.mp3");
     sword_sound = LoadSound("data/sounds/sword.mp3");
     death_sound = LoadSound("data/sounds/death.mp3");
     spring_sound = LoadSound("data/sounds/spring.mp3");
     sword_pick_up_sound = LoadSound("data/sounds/sword_pick_up.mp3");
+    SetSoundVolume(sword_pick_up_sound, 0.1f);
     enemy_death_sound = LoadSound("data/sounds/enemy_death.mp3");
+    SetSoundVolume(enemy_death_sound, 0.4f);
+    lose_sound = LoadSound("data/sounds/lose.mp3");
 }
 
 void unload_sounds() {
     UnloadSound(coin_sound);
     UnloadSound(exit_sound);
-    UnloadSound(main_menu_music);
+    UnloadSound(main_music);
     UnloadSound(win_sound);
     UnloadSound(sword_sound);
     UnloadSound(death_sound);
     UnloadSound(spring_sound);
     UnloadSound(sword_pick_up_sound);
     UnloadSound(enemy_death_sound);
+    UnloadSound(lose_sound);
 }
 
 #endif // IMAGES_H

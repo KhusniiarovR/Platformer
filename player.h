@@ -60,6 +60,10 @@ void move_player() {
         is_player_on_ground = false;
     }
 
+    if (IsKeyPressed(KEY_V)) {
+        show_game_overlay = !show_game_overlay;
+    }
+
     if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && is_player_on_ground) {
         player_y_velocity = -JUMP_STRENGTH;
     }
@@ -127,7 +131,7 @@ void update_player() {
                 }
             } break;
             case SPIKE: case SPIKE_UP: {
-                if (   is_colliding_sizeable(player_pos, SPIKE, 0.1f)
+                if (is_colliding_sizeable(player_pos, SPIKE, 0.1f)
                     || is_colliding_sizeable(player_pos, SPIKE_UP, 0.1f)) {
                     player_die = true;
                     PlaySound(death_sound);
@@ -184,7 +188,7 @@ void update_player() {
             } break;
             case CONVEYOR: {
                 if (is_colliding({player_pos.x, player_pos.y + 0.1f}, CONVEYOR)) {
-                    move_player_horizontally(-MOVEMENT_SPEED * 0.3f);
+                    move_player_horizontally(-MOVEMENT_SPEED * 0.4f);
                 }
             } break;
             case SWORD: {
@@ -231,10 +235,13 @@ void update_player() {
         }
     }
     if (is_colliding(player_pos, EXIT) || IsKeyPressed(KEY_EQUAL)) {
-        if (player_time > 0) {
+        if (player_time > 1) {
+            PlaySound(exit_sound);
             completed_levels[offset] = true;
         }
-        PlaySound(exit_sound);
+        else {
+            PlaySound(lose_sound);
+        }
         load_level();
     }
 }

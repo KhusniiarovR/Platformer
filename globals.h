@@ -392,13 +392,14 @@ sprite conveyor_sprite;
 
 Sound coin_sound;
 Sound exit_sound;
-Sound main_menu_music;
+Sound main_music;
 Sound win_sound;
 Sound sword_sound;
 Sound death_sound;
 Sound spring_sound;
 Sound sword_pick_up_sound;
 Sound enemy_death_sound;
+Sound lose_sound;
 
 /* Victory Menu Background */
 
@@ -433,8 +434,6 @@ enum game_state {
 };
 game_state GAMESTATE = GAME_MENU;
 
-/* Forward Declarations */
-
 // GRAPHICS_H
 
 void draw_text(Text &text);
@@ -453,6 +452,7 @@ void draw_victory_menu();
 
 bool is_mouse_inside_play_button = false;
 bool exit_condition = false;
+bool show_game_overlay = true;
 
 // LEVEL_H
 

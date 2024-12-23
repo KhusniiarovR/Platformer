@@ -48,7 +48,7 @@ void draw_menu_buttons() {
         else { is_mouse_inside_play_button = false;}
     }
     {
-        if (CheckCollisionPointRec(mouse_pos, exit_button) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        if (CheckCollisionPointRec(mouse_pos, exit_button) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_ESCAPE)) {
             exit_condition = true;
         }
     }
@@ -126,7 +126,7 @@ void draw_game_overlay() {
     Text time = {
         "Time " + std::to_string(player_time),
         { 0.50f, 0.05f },
-        48.0f
+        48.0f, BLUE
     };
     Text time_shadow = {
         "Time " + std::to_string(player_time),

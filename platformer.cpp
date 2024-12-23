@@ -17,6 +17,7 @@ void update_game() {
     if (player_lifes == 0) {
         GAMESTATE = GAME_OVER;
     }
+    if (IsKeyPressed(KEY_ESCAPE)) { GAMESTATE = GAME_PAUSED;}
     move_player();
     update_player();
 }
@@ -24,7 +25,7 @@ void update_game() {
 void draw_game() {
     ClearBackground(BLACK);
     draw_level();
-    draw_game_overlay();
+    if (show_game_overlay) { draw_game_overlay(); }
 }
 
 int main() {
@@ -40,12 +41,10 @@ int main() {
     load_level();
 
     while (!WindowShouldClose()) {
-        if (!IsSoundPlaying(main_menu_music)) {
-            PlaySound(main_menu_music);
+        if (!IsSoundPlaying(main_music)) {
+            PlaySound(main_music);
         }
-        if (exit_condition || IsKeyPressed(KEY_I)) {
-            break;
-        }
+        if (exit_condition) { break; }
         BeginDrawing();
         switch (GAMESTATE) {
             case GAME_MENU: {
@@ -57,7 +56,6 @@ int main() {
                 break;
             }
             case GAME_PLAY: {
-                if (IsKeyPressed(KEY_ESCAPE)) { GAMESTATE = GAME_PAUSED;}
                 update_game();
                 draw_game();
                 break;
