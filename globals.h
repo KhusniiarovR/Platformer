@@ -442,6 +442,7 @@ void draw_menu();
 void draw_menu_buttons();
 void draw_selection_menu();
 void draw_game_overlay();
+void draw_gameplay();
 void draw_level();
 void draw_player();
 void draw_pause_menu();
@@ -466,6 +467,7 @@ void unload_level();
 // PLAYER_H
 
 void spawn_player();
+void update_gameplay();
 void move_player_horizontally(float delta);
 void move_player();
 void update_player();

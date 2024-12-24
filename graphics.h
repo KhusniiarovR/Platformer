@@ -60,9 +60,6 @@ void draw_menu() {
     Rectangle destination = { 0, 0, screen_size.x, screen_size.y };
     DrawTexturePro(menu_image, source, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
     draw_menu_buttons();
-    if (IsKeyPressed(KEY_ENTER) || (is_mouse_inside_play_button && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) )) {
-        GAMESTATE = GAME_LEVEL_SELECTION;
-    }
 }
 
 void draw_selection_menu() {
@@ -75,12 +72,6 @@ void draw_selection_menu() {
                              screen_size.x * 0.2f, screen_size.y * 0.13f};
     DrawRectangleRounded(back_button_rec, 1, 4, {0,0,0,70});
     draw_text(back_button);
-    if (IsKeyPressed(KEY_ENTER)) {
-        GAMESTATE = GAME_PLAY;
-        offset--;
-        level_index = 0;
-        load_level();
-    }
     if (IsKeyPressed(KEY_ESCAPE) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, back_button_rec))) {
         GAMESTATE = GAME_MENU;
     }
@@ -145,6 +136,17 @@ void draw_game_overlay() {
     draw_text(time_shadow);
     draw_text(time);
     draw_text(current_level_number);
+}
+
+void draw_gameplay() {
+    ClearBackground(BLACK);
+    draw_level();
+    if (IsKeyPressed(KEY_ESCAPE)) {
+        GAMESTATE = GAME_PAUSED;
+    }
+    if (show_game_overlay) {
+        draw_game_overlay();
+    }
 }
 
 void draw_level() {
@@ -239,10 +241,12 @@ void draw_pause_menu() {
                              screen_size.x * 0.2f, screen_size.y * 0.13f};
     DrawRectangleRounded(back_button_rec, 1, 4, {255,255,255,70});
     draw_text(back_button);
+    if (IsKeyPressed(KEY_ENTER)) {
+        GAMESTATE = GAME_PLAY;
+    }
     if (IsKeyPressed(KEY_ESCAPE) || (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse_pos, back_button_rec))) {
         GAMESTATE = GAME_MENU;
     }
-    if (IsKeyPressed(KEY_ENTER)) { GAMESTATE = GAME_PLAY;}
 }
 
 void create_victory_menu_background() {
@@ -300,12 +304,6 @@ void draw_victory_menu() {
     draw_victory_menu_background();
     draw_text(victory_title);
     draw_text(victory_subtitle);
-    if (IsKeyPressed(KEY_ENTER)) {
-        for (int i = 0; i < LEVEL_COUNT; i++) {
-            completed_levels[i] = false;
-        }
-        GAMESTATE = GAME_MENU;
-    }
 }
 
 void draw_game_over() {

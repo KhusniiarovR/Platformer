@@ -7,25 +7,69 @@
 #include "utilities.h"
 
 void update_game() {
-    game_frame++;
-    if (game_frame % 60 == 0) {
-        if (player_time > 0) {
-            player_time--;
+    switch (GAMESTATE) {
+        case GAME_MENU: {
+            if (IsKeyPressed(KEY_ENTER) || (is_mouse_inside_play_button && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) )) {
+                GAMESTATE = GAME_LEVEL_SELECTION; }
+            break;
         }
-        move_enemy();
+        case GAME_LEVEL_SELECTION: {
+            if (IsKeyPressed(KEY_ENTER)) {
+                GAMESTATE = GAME_PLAY;
+                offset--;
+                level_index = 0;
+                load_level();
+            }
+            break;
+        }
+        case GAME_PLAY: {
+            update_gameplay();
+            break;
+        }
+        case GAME_END: {
+            if (IsKeyPressed(KEY_ENTER)) {
+                for (int i = 0; i < LEVEL_COUNT; i++) {
+                    completed_levels[i] = false;
+                }
+                GAMESTATE = GAME_MENU;
+            }
+            break;
+        }
+        case GAME_PAUSED: case GAME_OVER: {
+            break;
+        }
     }
-    if (player_lifes == 0) {
-        GAMESTATE = GAME_OVER;
-    }
-    if (IsKeyPressed(KEY_ESCAPE)) { GAMESTATE = GAME_PAUSED;}
-    move_player();
-    update_player();
 }
 
 void draw_game() {
     ClearBackground(BLACK);
-    draw_level();
-    if (show_game_overlay) { draw_game_overlay(); }
+    switch (GAMESTATE) {
+        case GAME_MENU: {
+            draw_menu();
+        break;
+        }
+        case GAME_LEVEL_SELECTION: {
+            draw_selection_menu();
+        break;
+        }
+        case GAME_PLAY: {
+            draw_gameplay();
+        break;
+        }
+        case GAME_END: {
+            draw_victory_menu();
+        break;
+        }
+        case GAME_PAUSED: {
+            draw_gameplay();
+            draw_pause_menu();
+        break;
+        }
+        case GAME_OVER: {
+            draw_game_over();
+        break;
+        }
+    }
 }
 
 int main() {
@@ -45,36 +89,9 @@ int main() {
             PlaySound(main_music);
         }
         if (exit_condition) { break; }
+        update_game();
         BeginDrawing();
-        switch (GAMESTATE) {
-            case GAME_MENU: {
-                draw_menu();
-                break;
-            }
-            case GAME_LEVEL_SELECTION: {
-                draw_selection_menu();
-                break;
-            }
-            case GAME_PLAY: {
-                update_game();
-                draw_game();
-                break;
-            }
-            case GAME_END: {
-                draw_victory_menu();
-                break;
-            }
-            case GAME_PAUSED: {
-                draw_game();
-                draw_pause_menu();
-                break;
-            }
-            case GAME_OVER: {
-                ClearBackground(BLACK);
-                draw_game_over();
-                break;
-            }
-        }
+        draw_game();
         EndDrawing();
     }
 

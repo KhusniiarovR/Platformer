@@ -17,6 +17,21 @@ void spawn_player() {
     }
 }
 
+void update_gameplay() {
+    game_frame++;
+    if (game_frame % 60 == 0) {
+        if (player_time > 0) {
+            player_time--;
+        }
+        move_enemy();
+    }
+    if (player_lifes == 0) {
+        GAMESTATE = GAME_OVER;
+    }
+    move_player();
+    update_player();
+}
+
 void move_player_horizontally(float delta) {
     float next_x = player_pos.x + delta;
     bool collision_wall = false;
@@ -188,7 +203,7 @@ void update_player() {
             } break;
             case CONVEYOR: {
                 if (is_colliding({player_pos.x, player_pos.y + 0.1f}, CONVEYOR)) {
-                    move_player_horizontally(-MOVEMENT_SPEED * 0.4f);
+                    move_player_horizontally(MOVEMENT_SPEED * 0.3f);
                 }
             } break;
             case SWORD: {

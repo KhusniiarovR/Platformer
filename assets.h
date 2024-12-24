@@ -180,17 +180,18 @@ void draw_sprite(sprite &sprite, Vector2 pos, float width, float height) {
 
 void load_sounds() {
     InitAudioDevice();
-    SetMasterVolume(0.15f);
+    SetMasterVolume(0.3f);
     coin_sound = LoadSound("data/sounds/coin.wav");
     exit_sound = LoadSound("data/sounds/exit.wav");
     main_music = LoadSound("data/music/music_main.mp3");
-    SetSoundVolume(main_music, 0.13f);
+    SetSoundVolume(main_music, 0.3f);
     win_sound = LoadSound("data/sounds/win.mp3");
     sword_sound = LoadSound("data/sounds/sword.mp3");
     death_sound = LoadSound("data/sounds/death.mp3");
     spring_sound = LoadSound("data/sounds/spring.mp3");
+    SetSoundVolume(spring_sound, 0.2f);
     sword_pick_up_sound = LoadSound("data/sounds/sword_pick_up.mp3");
-    SetSoundVolume(sword_pick_up_sound, 0.1f);
+    SetSoundVolume(sword_pick_up_sound, 0.2f);
     enemy_death_sound = LoadSound("data/sounds/enemy_death.mp3");
     SetSoundVolume(enemy_death_sound, 0.4f);
     lose_sound = LoadSound("data/sounds/lose.mp3");
